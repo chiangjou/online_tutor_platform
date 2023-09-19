@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-router.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+const courseController = require('../controllers/course-controller')
+
+router.get('/tutors', courseController.getTutors)
+
+router.use('/', (req, res) => res.redirect('/tutors'))
 
 module.exports = router
