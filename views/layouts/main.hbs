@@ -9,9 +9,16 @@
     integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
 
-<body>
-  {{> messages}}
-  {{{body}}}
+<body class="d-flex flex-column h-100 bg-light">
+  {{> header}}
+  <main class="flex-shrink-0" role="main">
+    <div class="album container pt-5">
+      <div class="pt-5">
+        {{> messages}}
+        {{{body}}}
+      </div>
+    </div>
+  </main>
 </body>
 
 {{!-- Scripts --}}
