@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs')
-const { User } = require('../models')
+const { User, Tutor } = require('../models')
+const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -35,6 +36,34 @@ const userController = {
     req.flash('success_messages', '登出成功！')
     req.logout()
     res.redirect('/signin')
+  },
+  getTutors: (req, res, next) => {
+    const DEFAULT_LIMIT = 6
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || DEFAULT_LIMIT
+    const offset = getOffset(limit, page)
+
+    Tutor.findAndCountAll({
+      nest: true,
+      raw: true,
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'avatar', 'nation']
+        }
+      ],
+      limit,
+      offset
+    })
+      .then(tutors => {
+        const data = tutors.rows
+
+        return res.render('tutors', {
+          data,
+          pagination: getPagination(limit, page, tutors.count)
+        })
+      })
+      .catch(err => next(err))
   }
 }
 

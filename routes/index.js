@@ -17,7 +17,7 @@ router.get('/signin', userController.signInPage)
 router.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
 router.get('/logout', userController.logout)
 
-router.get('/tutors', authenticated, courseController.getTutors)
+router.get('/tutors', authenticated, userController.getTutors)
 
 router.use('/', (req, res) => res.redirect('/tutors'))
 router.use('/', generalErrorHandler)
