@@ -18,6 +18,7 @@ router.post('/signin', passport.authenticate('local', { failureRedirect: '/signi
 router.get('/logout', userController.logout)
 
 router.get('/tutors', authenticated, userController.getTutors)
+router.get('/tutors/:id', authenticated, userController.getTutor)
 
 router.use('/', (req, res) => res.redirect('/tutors'))
 router.use('/', generalErrorHandler)

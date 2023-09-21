@@ -1,0 +1,63 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="row" id="image-name">
+        <div class="col-md-5">
+          <img class="img-responsive center-block" src="{{tutor.User.avatar}}"
+            style="width: 250px; margin-bottom: 25px; transition: opacity 0.5s; opacity:0;"
+            onload="this.style.opacity=1;">
+        </div>
+        <div class="col-md-5">
+          <h2>{{tutor.User.name}}</h2>
+          <h4>評價：❤️ 4.8</h4>
+        </div>
+      </div>
+      <div id="introduction">
+        <h4>Introduction</h4>
+        <p>{{tutor.tutorIntroduction}}</p>
+      </div>
+      <div id="method">
+        <h4>Teaching Style</h4>
+        <p>{{tutor.teachingStyle}}</p>
+      </div>
+      <div id="class-history">
+        <h4>Lesson History</h4>
+        <p>comment</p>
+
+    <div class="col-md-3">
+        <h4>預約上課</h4>
+        <select name="bookDate" id="bookDate">
+          <option>Time</option>
+        </select>
+
+        <!-- Button trigger modal -->
+        <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#book-class-model">
+          Submit
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="book-class-model" tabindex="-1" aria-labelledby="exampleModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">預約成功</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p id="booked-date">時間：</p>
+                <p>老師：{{tutor.User.name}}</p>
+                <p>上課連結：{{tutor.teachingLink}}</p>
+              </div>
+              <div class="modal-footer">
+                <button id="close-booked-button" type="button" class="btn btn-secondary"
+                  data-bs-dismiss="modal">OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

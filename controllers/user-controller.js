@@ -64,6 +64,22 @@ const userController = {
         })
       })
       .catch(err => next(err))
+  },
+  getTutor: (req, res, next) => {
+    return Tutor.findByPk(req.params.id, {
+      nest: true,
+      raw: true,
+      include: [
+        { model: User }
+      ]
+    })
+      .then(tutor => {
+        if (!tutor) throw new Error("Tutor didn't exist!")
+        res.render('tutor', {
+          tutor
+        })
+      })
+      .catch(err => next(err))
   }
 }
 
