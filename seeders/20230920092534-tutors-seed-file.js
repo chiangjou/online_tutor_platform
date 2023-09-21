@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 const faker = require('faker')
 
 module.exports = {
@@ -38,4 +38,4 @@ module.exports = {
       console.error('Error reverting Tutors table.', error)
     }
   }
-};
+}
