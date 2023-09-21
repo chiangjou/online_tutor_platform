@@ -4,6 +4,8 @@ const adminController = require('../../controllers/admin-controller')
 const { authenticatedAdmin } = require('../../middleware/auth')
 
 router.get('/users', authenticatedAdmin, adminController.getUsers)
+router.get('/students', authenticatedAdmin, adminController.getStudents)
+router.get('/tutors', authenticatedAdmin, adminController.getTutors)
 
 router.use('/', (req, res) => res.redirect('/admin/users'))
 

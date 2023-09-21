@@ -7,22 +7,45 @@
         aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+      {{/if}}
       <div class="collapse navbar-collapse" id="navbarCollapse">
+        {{#if user}}
+        {{#if user.isAdmin}}
+        <!-- 管理員身份 -->
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-          {{#if user.isAdmin}}
           <li class="nav-item">
-            <a href="/admin" class="nav-link">Admin 後台</a>
-          </li>
-          {{/if}}
-          <li class="nav-item d-inline-flex align-items-center">
-            <span class="text-white nav-link">Hi, {{ user.email }}</span>
+            <a href="/admin" class="nav-link">使用者清單</a>
           </li>
           <li class="nav-item">
-            <a href="/logout"><button class="btn btn-outline-success my-sm-0 my-2">Logout</button></a>
+            <a href="/logout" class="btn btn-outline-success my-sm-0 my-2">Logout</a>
           </li>
         </ul>
+        {{else if user.isTutor}}
+        <!-- 老師身份 -->
+        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a href="/tutors/{{ user.id }}" class="nav-link">{{ user.name }}</a>
+          </li>
+          <li class="nav-item">
+            <a href="/logout" class="btn btn-outline-success my-sm-0 my-2">Logout</a>
+          </li>
+        </ul>
+        {{else}}
+        <!-- 一般使用者身份 -->
+        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a href="/users/{{ user.id }}" class="nav-link">{{ user.name }}</a>
+          </li>
+          <li class="nav-item">
+            <a href="/users/{{ user.id }}/join" class="nav-link">成為老師</a>
+          </li>
+          <li class="nav-item">
+            <a href="/logout" class="btn btn-outline-success my-sm-0 my-2">Logout</a>
+          </li>
+        </ul>
+        {{/if}}
+        {{/if}}
       </div>
-      {{/if}}
     </div>
   </nav>
 </header>

@@ -1,14 +1,12 @@
-{{>admin-tabs route='users'}}
+{{>admin-tabs route='students'}}
 
 <table class="table align-middle">
   <thead class="thead-dark">
     <tr>
       <th scope="col">ID</th>
       <th scope="col">名字</th>
-      <th scope="col">身份</th>
     </tr>
   </thead>
-
   <div>
     {{#each data}}
     <tr>
@@ -19,9 +17,9 @@
           {{this.name}}
         </button>
       </td>
-      <td>{{#if this.isTutor}}老師{{else}}學生{{/if}}</td>
     </tr>
 
+    <!-- Modal -->
     {{!-- User Info Modal --}}
     <div class="modal fade" id="userInfo{{this.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
       aria-hidden="true">

@@ -1,34 +1,32 @@
-{{>admin-tabs route='users'}}
+{{>admin-tabs route='tutors'}}
 
 <table class="table align-middle">
   <thead class="thead-dark">
     <tr>
       <th scope="col">ID</th>
       <th scope="col">名字</th>
-      <th scope="col">身份</th>
     </tr>
   </thead>
-
   <div>
     {{#each data}}
     <tr>
       <th scope="row">{{this.id}}</th>
       <td>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#userInfo{{this.id}}">
+        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#tutorInfo{{this.id}}">
           {{this.name}}
         </button>
       </td>
-      <td>{{#if this.isTutor}}老師{{else}}學生{{/if}}</td>
     </tr>
 
-    {{!-- User Info Modal --}}
-    <div class="modal fade" id="userInfo{{this.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+    <!-- Modal -->
+    {{!-- Teacher Info Modal --}}
+    <div class="modal fade" id="tutorInfo{{this.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
       aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">用戶資訊</h5>
+            <h5 class="modal-title" id="exampleModalLabel">老師資訊</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body d-flex flex-row ">
@@ -39,10 +37,12 @@
               <ul style="list-style-type: none;">
                 <li><strong>名字：</strong>{{this.name}}</li>
                 <li><strong>E-mail：</strong>{{this.email}}</li>
-                <li><strong>關於我：</strong>
-                  <p>{{this.introduction}}</p>
+                <li><strong>課程方式：</strong>
+                  <p>{{this.Tutor.teachingStyle}}</p>
                 </li>
-                <li><strong>加入時間：</strong>{{this.createdAt}}</li>
+                <li><strong>課程介紹：</strong>
+                  <p>{{this.Tutor.tutorIntroduction}}</p>
+                </li>
               </ul>
             </div>
           </div>
