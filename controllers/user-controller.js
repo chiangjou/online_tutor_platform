@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const { User, Tutor } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const { localFileHandler } = require('../helpers/file-helpers')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -78,6 +79,58 @@ const userController = {
         res.render('tutor', {
           tutor
         })
+      })
+      .catch(err => next(err))
+  },
+  getProfile: (req, res, next) => {
+    const userId = req.user.id
+    if (userId !== Number(req.params.id)) throw new Error('無法查看其他使用者頁面')
+
+    return User.findByPk(userId, {
+      attributes: { exclude: ['password'] },
+      raw: true
+    })
+      .then(user => {
+        if (!user) throw new Error('此用戶不存在')
+        return res.render('user/profile', {
+          user
+        })
+      })
+      .catch(err => next(err))
+  },
+  editProfile: (req, res, next) => {
+    const userId = req.user.id
+    return User.findByPk(userId, {
+      raw: true
+    })
+      .then(user => {
+        if (!user) throw new Error('此用戶不存在')
+        return res.render('user/edit-profile', {
+          user
+        })
+      })
+      .catch(err => next(err))
+  },
+  putProfile: (req, res, next) => {
+    const { name, nation, introduction } = req.body
+    if (!name) throw new Error('Name is required!')
+    const { file } = req
+    return Promise.all([
+      User.findByPk(req.params.id, { attributes: { exclude: ['password'] } }),
+      localFileHandler(file)
+    ])
+      .then(([user, filePath]) => {
+        if (!user) throw new Error('此用戶不存在')
+        return user.update({
+          name,
+          nation,
+          introduction,
+          avatar: filePath || user.avatar
+        })
+      })
+      .then(() => {
+        req.flash('success_messages', '成功更新個人資料')
+        return res.redirect(`/users/${req.params.id}`)
       })
       .catch(err => next(err))
   }

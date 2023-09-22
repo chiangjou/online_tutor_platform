@@ -7,6 +7,7 @@ const userController = require('../controllers/user-controller')
 
 const { authenticated } = require('../middleware/auth')
 const { generalErrorHandler } = require('../middleware/error-handler')
+const upload = require('../middleware/multer')
 
 const admin = require('./modules/admin')
 router.use('/admin', admin)
@@ -19,6 +20,10 @@ router.get('/logout', userController.logout)
 
 router.get('/tutors', authenticated, userController.getTutors)
 router.get('/tutors/:id', authenticated, userController.getTutor)
+
+router.get('/users/:id', authenticated, userController.getProfile)
+router.get('/users/:id/edit', userController.editProfile)
+router.put('/users/:id', upload.single('avatar'), userController.putProfile)
 
 router.use('/', (req, res) => res.redirect('/tutors'))
 router.use('/', generalErrorHandler)

@@ -3,6 +3,8 @@ const exphbs = require('express-handlebars')
 const flash = require('connect-flash')
 const session = require('express-session')
 const passport = require('./config/passport')
+const methodOverride = require('method-override')
+const path = require('path')
 const handlebarsHelpers = require('./helpers/handlebars-helpers')
 const { getUser } = require('./helpers/auth-helpers')
 const routes = require('./routes')
@@ -31,6 +33,9 @@ app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: fals
 app.use(passport.initialize())
 app.use(passport.session())
 
+// method-override
+app.use(methodOverride('_method'))
+
 // flash
 app.use(flash())
 app.use((req, res, next) => {
@@ -39,6 +44,9 @@ app.use((req, res, next) => {
   res.locals.user = getUser(req)
   next()
 })
+
+// path
+app.use('/upload', express.static(path.join(__dirname, 'upload')))
 
 app.use(routes)
 

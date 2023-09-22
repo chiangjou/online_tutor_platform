@@ -1,0 +1,24 @@
+<form action="/users/{{user.id}}?_method=PUT" method="POST" enctype="multipart/form-data">
+  <div class="mb-4 text-center">
+    <h1 class="h3 font-weight-normal mb-3">編輯個人資料</h1>
+  </div>
+  <div class=" form-row mb-3">
+    <label class="form-label" for="name">姓名</label>
+    <input class="form-control" type="text" name="name" id="name" placeholder="Enter name" value="{{user.name}}">
+  </div>
+  <div class="form-row mb-3">
+    <label class="form-label" for="avatar">頭像</label>
+    <input class="form-control" type="file" class="form-control-file" id="avatar" name="avatar" value="{{user.avatar}}">
+  </div>
+  <div class="form-row mb-3">
+    <label class="form-label" for="nation">國籍</label>
+    <input class="form-control" id="nation" name="nation" rows="3" value="{{user.nation}}">
+  </div>
+  <div class="form-row mb-3">
+    <label class="form-label" for="introduction">自我介紹</label>
+    <textarea class="form-control" id="introduction" name="introduction" rows="3">{{user.introduction}}</textarea>
+  </div>
+  <hr>
+  <button type="submit" class="btn btn-primary">儲存</button>
+</form>
+<a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>

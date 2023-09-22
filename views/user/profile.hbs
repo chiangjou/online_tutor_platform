@@ -1,0 +1,48 @@
+<div class="row mb-5">
+  <div class="col-md-4">
+    <img class="img-responsive center-block mb-5" src="{{user.avatar}}"
+      style="width: 250px; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
+    <div class="card-body">
+      <h1>{{user.name}}</h1>
+      <strong>Nation</strong>
+      <p style="white-space: break-spaces;">{{user.nation}}</p>
+
+      <strong>About Me</strong>
+      <p style="white-space: break-spaces;">{{user.introduction}}</p>
+      <br>
+      <a class="btn btn-primary" href="/users/{{user.id}}/edit">edit</a>
+      <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+    </div>
+  </div>
+  <div class="col-md-8">
+    {{!-- course info --}}
+    <div class="col-md-8">
+      <div class="row mb-5">
+        <h4>New Schedule</h4>
+        <div class="d-flex justify-content-between">
+          <div class="card col-6 me-2">
+            <p>Time: </p>
+            <p>Teacher's Name: </p>
+            <p>Session Link: </p>
+          </div>
+          <div class="card col-6 me-2">
+            <p>Time: </p>
+            <p>Student's Name: </p>
+            <p>Session Link: </p>
+          </div>
+        </div>
+      </div>
+
+      <h4>Lesson History</h4>
+      <div class="card col-6 me-2">
+        <div>tutor avatar</div>
+        <p>tutor name</p>
+        <div>score</div>
+      </div>
+
+
+      <h4>我的學習時數名次</h4>
+      <p>Ranking: </p>
+
+    </div>
+  </div>
