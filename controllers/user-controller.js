@@ -133,6 +133,48 @@ const userController = {
         return res.redirect(`/users/${req.params.id}`)
       })
       .catch(err => next(err))
+  },
+  getApply: (req, res, next) => {
+    const userId = req.user.id
+    Promise.all([
+      User.findByPk(userId,
+        { attributes: { exclude: ['password'] }, raw: true }),
+      Tutor.findOne({ where: { userId }, raw: true })
+    ])
+    .then(([user, tutor]) => {
+      if (!user) throw new Error('此用戶不存在')
+      if (tutor) throw new Error('您已經是老師')
+
+      return res.render('user/apply-tutor')
+    })
+    .catch(err => next(err))
+  },
+  postApply: (req, res, next) => {
+    const { tutorIntroduction, teachingStyle, duration, teachingTime, teachingLink } = req.body
+    const userId = req.user.id
+    const teachingTimeString = JSON.stringify(teachingTime)
+    if (!tutorIntroduction || !teachingStyle || !teachingLink) throw new Error('所有欄位皆為必填')
+
+    User.findByPk(userId, { attributes: { exclude: ['password'] } })
+    .then(user => {
+      if (!user) throw new Error('此用戶不存在')
+      return user.update({ isTutor: 1 })
+    })
+    .then(() => {
+      Tutor.create({
+        tutorIntroduction,
+        teachingStyle,
+        duration,
+        teachingTime: teachingTimeString,
+        teachingLink,
+        userId
+      })
+    })
+    .then(() => {
+      req.flash('success_messages', '申請成功')
+      return res.redirect('/tutors')
+    })
+    .catch(err => next(err))
   }
 }
 
