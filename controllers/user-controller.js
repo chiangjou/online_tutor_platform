@@ -9,20 +9,28 @@ const userController = {
     res.render('signup')
   },
   signUp: (req, res, next) => {
-    if (req.body.password !== req.body.passwordCheck) throw new Error('Passwords do not match!')
+    const { name, email, password, passwordCheck } = req.body
+    if (!name || !email || !password || !passwordCheck) throw new Error('所有欄位皆為必填')
+    if (password !== passwordCheck) throw new Error('密碼不相符，請再次確認密碼')
 
-    User.findOne({ where: { email: req.body.email } })
+    return User.findOne({
+      where: { email }
+    })
       .then(user => {
-        if (user) throw new Error('Email already exists!')
-        return bcrypt.hash(req.body.password, 10)
+        if (user) {
+          if (user.toJSON().email === email) throw new Error('此 Email 已被註冊')
+        }
+        return bcrypt.hash(password, 10)
       })
       .then(hash => User.create({
-        name: req.body.name,
-        email: req.body.email,
-        password: hash
+        name,
+        email,
+        password: hash,
+        isAdmin: 0,
+        isTutor: 0
       }))
       .then(() => {
-        req.flash('success_messages', '成功註冊帳號！')
+        req.flash('success_messages', '成功註冊帳號')
         res.redirect('/signin')
       })
       .catch(err => next(err))
@@ -100,7 +108,7 @@ const userController = {
 
         // 將可預約時間轉為數字並排序
         teachingTime = teachingTime.map(day => Number(day)).sort((a, b) => a - b)
-        
+
         // 已被預約的課程
         const bookedCourses = courses.filter(courseData => courseData.time > Date.now()).map(courseData => dayjs(courseData.time).format('YYYY-MM-DD HH:mm'))
 
@@ -167,7 +175,7 @@ const userController = {
     ])
       .then(([user, courses]) => {
         if (!user) throw new Error('此用戶不存在')
-        
+
         const pastCourses = courses.filter(courseItem => {
           return new Date(courseItem.time) < new Date()
         }).map(courseItem => {
@@ -229,13 +237,13 @@ const userController = {
         { attributes: { exclude: ['password'] }, raw: true }),
       Tutor.findOne({ where: { userId }, raw: true })
     ])
-    .then(([user, tutor]) => {
-      if (!user) throw new Error('此用戶不存在')
-      if (tutor) throw new Error('您已經是老師')
+      .then(([user, tutor]) => {
+        if (!user) throw new Error('此用戶不存在')
+        if (tutor) throw new Error('您已經是老師')
 
-      return res.render('user/apply-tutor')
-    })
-    .catch(err => next(err))
+        return res.render('user/apply-tutor')
+      })
+      .catch(err => next(err))
   },
   postApply: (req, res, next) => {
     const { tutorIntroduction, teachingStyle, duration, teachingTime, teachingLink } = req.body
@@ -244,25 +252,25 @@ const userController = {
     if (!tutorIntroduction || !teachingStyle || !teachingLink) throw new Error('所有欄位皆為必填')
 
     User.findByPk(userId, { attributes: { exclude: ['password'] } })
-    .then(user => {
-      if (!user) throw new Error('此用戶不存在')
-      return user.update({ isTutor: 1 })
-    })
-    .then(() => {
-      Tutor.create({
-        tutorIntroduction,
-        teachingStyle,
-        duration,
-        teachingTime: teachingTimeString,
-        teachingLink,
-        userId
+      .then(user => {
+        if (!user) throw new Error('此用戶不存在')
+        return user.update({ isTutor: 1 })
       })
-    })
-    .then(() => {
-      req.flash('success_messages', '申請成功')
-      return res.redirect('/tutors')
-    })
-    .catch(err => next(err))
+      .then(() => {
+        Tutor.create({
+          tutorIntroduction,
+          teachingStyle,
+          duration,
+          teachingTime: teachingTimeString,
+          teachingLink,
+          userId
+        })
+      })
+      .then(() => {
+        req.flash('success_messages', '申請成功')
+        return res.redirect('/tutors')
+      })
+      .catch(err => next(err))
   }
 }
 
