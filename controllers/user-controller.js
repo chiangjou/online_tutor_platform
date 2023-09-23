@@ -145,14 +145,43 @@ const userController = {
     const userId = req.user.id
     if (userId !== Number(req.params.id)) throw new Error('無法查看其他使用者頁面')
 
-    return User.findByPk(userId, {
-      attributes: { exclude: ['password'] },
-      raw: true
-    })
-      .then(user => {
+    return Promise.all([
+      User.findByPk(userId, {
+        attributes: { exclude: ['password'] },
+        raw: true
+      }),
+      Course.findAll({
+        raw: true,
+        nest: true,
+        where: { userId },
+        order: [['time', 'ASC']],
+        include: [{
+          model: Tutor,
+          attributes: ['id', 'userId', 'teachingLink'],
+          include: [{
+            model: User,
+            attributes: ['name', 'avatar']
+          }]
+        }]
+      })
+    ])
+      .then(([user, courses]) => {
         if (!user) throw new Error('此用戶不存在')
+        
+        const pastCourses = courses.filter(courseItem => {
+          return new Date(courseItem.time) < new Date()
+        }).map(courseItem => {
+          courseItem.time = dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
+          return courseItem
+        }).reverse()
+        const futureCourses = courses.filter(courseItem => {
+          return new Date(courseItem.time) >= new Date()
+        }).map(courseItem => {
+          courseItem.time = dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
+          return courseItem
+        })
         return res.render('user/profile', {
-          user
+          user, pastCourses, futureCourses
         })
       })
       .catch(err => next(err))

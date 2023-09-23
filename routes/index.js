@@ -33,7 +33,8 @@ router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
 router.put('/tutor/:id', authenticated, tutorController.putProfile)
 router.get('/tutor/:id', authenticated, tutorController.getProfile)
 
-router.post('/tutors/:id/bookCourse', authenticated, courseController.bookCourse)
+router.post('/tutors/:id/booking', authenticated, courseController.bookCourse)
+router.post('/coures/:id/rating', authenticated, courseController.rateCourse)
 
 router.use('/', (req, res) => res.redirect('/tutors'))
 router.use('/', generalErrorHandler)
