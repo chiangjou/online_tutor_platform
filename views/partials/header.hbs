@@ -1,17 +1,18 @@
 <header>
-  <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark px-4">
+  <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light px-4">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Tutor</a>
-      {{#if user}}
+      <div class="d-flex justify-content-center align-items-center">
+        <img src="/stylesheets/icons/logo.svg" alt="brand-logo" class="m-2" style="height: 40px; width: 40px">
+        <a class="navbar-brand m-2" href="/"><strong>Tutor</strong></a>
+      </div>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
         aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      {{/if}}
-      <div class="collapse navbar-collapse" id="navbarCollapse">
+      <div class="collapse navbar-collapse text-end" id="navbarCollapse">
         {{#if user}}
+        {{!-- 管理員身份 --}}
         {{#if user.isAdmin}}
-        <!-- 管理員身份 -->
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
           <li class="nav-item">
             <a href="/admin" class="nav-link">使用者清單</a>
@@ -20,8 +21,8 @@
             <a href="/logout" class="btn btn-outline-success my-sm-0 my-2">Logout</a>
           </li>
         </ul>
+        {{!-- 老師身份 --}}
         {{else if user.isTutor}}
-        <!-- 老師身份 -->
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
           <li class="nav-item">
             <a href="/tutor/{{ user.id }}" class="nav-link">{{ user.name }}</a>
@@ -30,8 +31,8 @@
             <a href="/logout" class="btn btn-outline-success my-sm-0 my-2">Logout</a>
           </li>
         </ul>
+        {{!-- 一般使用者身份 --}}
         {{else}}
-        <!-- 一般使用者身份 -->
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
           <li class="nav-item">
             <a href="/users/{{ user.id }}" class="nav-link">{{ user.name }}</a>
@@ -44,6 +45,16 @@
           </li>
         </ul>
         {{/if}}
+        {{else}}
+        {{!-- 未登入用戶 --}}
+        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item me-2">
+            <a href="/login"><button class="btn btn-light m-2">登入</button></a>
+          </li>
+          <li class="nav-item me-2">
+            <a href="/signup"><button class="btn btn-outline-secondary m-2">註冊</button></a>
+          </li>
+        </ul>
         {{/if}}
       </div>
     </div>
