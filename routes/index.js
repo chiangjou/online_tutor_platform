@@ -29,6 +29,8 @@ router.put('/users/:id', upload.single('avatar'), userController.putProfile)
 router.get('/users/:id/apply', authenticated, userController.getApply)
 router.post('/users/:id/apply', authenticated, userController.postApply)
 
+router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
+router.put('/tutor/:id', authenticated, tutorController.putProfile)
 router.get('/tutor/:id', authenticated, tutorController.getProfile)
 
 router.use('/', (req, res) => res.redirect('/tutors'))
