@@ -16,3 +16,17 @@
   background-color: #308882;
   color: white;
 }
+
+.custom-solid-button {
+  background-color:#308882;
+  border: white;
+  color: white;
+  padding: 8px;
+  border-radius: 10px;
+  transition: background-color 0.3s;
+}
+
+.custom-solid-button:hover {
+  background-color: #0e4d4a;
+  color: white;
+}
