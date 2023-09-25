@@ -231,47 +231,80 @@ const userController = {
       })
       .catch(err => next(err))
   },
-  getApply: (req, res, next) => {
-    const userId = req.user.id
-    Promise.all([
-      User.findByPk(userId,
-        { attributes: { exclude: ['password'] }, raw: true }),
-      Tutor.findOne({ where: { userId }, raw: true })
-    ])
-      .then(([user, tutor]) => {
-        if (!user) throw new Error('此用戶不存在')
-        if (tutor) throw new Error('您已經是老師')
-
-        return res.render('user/apply-tutor')
-      })
-      .catch(err => next(err))
+  getApply: async (req, res, next) => {
+    try {
+      const userId = req.user.id
+      const user = await User.findByPk(userId,
+        { attributes: { exclude: ['password'] }, raw: true })
+      const tutor = await Tutor.findOne({ where: { userId }, raw: true })
+      if (!user) {
+        throw new Error('此用戶不存在')
+      }
+      if (tutor) {
+        throw new Error('您已經是老師')
+      }
+      res.render('user/apply-tutor')
+    } catch (err) {
+      next(err)
+    }
   },
-  postApply: (req, res, next) => {
-    const { tutorIntroduction, teachingStyle, duration, teachingTime, teachingLink } = req.body
+  postApply: async (req, res, next) => {
+    const { name, nation, tutorIntroduction, teachingStyle, duration, teachingTime, teachingLink } = req.body
     const userId = req.user.id
     const teachingTimeString = JSON.stringify(teachingTime)
-    if (!tutorIntroduction || !teachingStyle || !teachingLink) throw new Error('所有欄位皆為必填')
+    const { file } = req
+    const requiredData = {
+      name: '姓名',
+      nation: '國籍',
+      tutorIntroduction: '關於我',
+      teachingStyle: '教學風格',
+      teachingLink: '課程視訊連結',
+    }
+    let missingData = []
 
-    User.findByPk(userId, { attributes: { exclude: ['password'] } })
-      .then(user => {
-        if (!user) throw new Error('此用戶不存在')
-        return user.update({ isTutor: 1 })
+    try {
+      // 檢查必填資料是否為空
+      for (const data in requiredData) {
+        if (!req.body[data]) {
+          missingData.push(requiredData[data])
+        }
+      }
+      // 未填資料有兩個以上
+      if (missingData.length >= 2) {
+        throw new Error(`「${missingData.join('、 ')}」為必填`)
+      }
+      // 查找用戶
+      const user = await User.findByPk(userId, {
+        attributes: { exclude: ['password'] },
       })
-      .then(() => {
-        Tutor.create({
-          tutorIntroduction,
-          teachingStyle,
-          duration,
-          teachingTime: teachingTimeString,
-          teachingLink,
-          userId
-        })
+      if (!user) {
+        throw new Error('此用戶不存在')
+      }
+      // 更新 User 資料
+      const [updatedUser, filePath] = await Promise.all([
+        user.update({
+          name,
+          avatar: file ? file.path : user.avatar,
+          nation,
+          isTutor: 1,
+        }),
+        localFileHandler(file)
+      ])
+      // 建立 Tutor
+      await Tutor.create({
+        tutorIntroduction,
+        teachingStyle,
+        duration,
+        teachingTime: teachingTimeString,
+        teachingLink,
+        userId,
       })
-      .then(() => {
-        req.flash('success_messages', '申請成功')
-        return res.redirect('/tutors')
-      })
-      .catch(err => next(err))
+
+      req.flash('success_messages', '申請成功');
+      return res.redirect(`/tutor/${req.params.id}`)
+    } catch (err) {
+      return next(err)
+    }
   }
 }
 

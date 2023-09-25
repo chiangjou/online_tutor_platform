@@ -30,7 +30,7 @@ router.get('/users/:id/edit', userController.editProfile)
 router.put('/users/:id', upload.single('avatar'), userController.putProfile)
 
 router.get('/users/:id/apply', authenticated, userController.getApply)
-router.post('/users/:id/apply', authenticated, userController.postApply)
+router.post('/users/:id/apply', upload.single('avatar'), authenticated, userController.postApply)
 
 router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
 router.put('/tutor/:id', authenticated, tutorController.putProfile)
