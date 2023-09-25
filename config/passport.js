@@ -32,33 +32,32 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK
 },
-  (accessToken, refreshToken, profile, cb) => {
-    const { name, email } = profile._json
-    isAdmin = 0
-    User.findOne({ where: { email } })
-      .then(user => {
-        if (user) {
-          user.strategy = 'localStrategylocal'
-          return cb(null, user)
-        }
-        const randomPassword = Math.random().toString(36).slice(-8)
-        bcrypt
-          .genSalt(10)
-          .then(salt => bcrypt.hash(randomPassword, salt))
-          .then(hash => User.create({
-            name,
-            email,
-            password: hash,
-            isAdmin: 0,
-            isTutor: 0
-          }))
-          .then(user => {
-            user.strategy = 'localStategylocal'
-            cb(null, user)
-          })
-          .catch(err => cb(err, false))
-      })
-  }
+(accessToken, refreshToken, profile, cb) => {
+  const { name, email } = profile._json
+  User.findOne({ where: { email } })
+    .then(user => {
+      if (user) {
+        user.strategy = 'localStrategylocal'
+        return cb(null, user)
+      }
+      const randomPassword = Math.random().toString(36).slice(-8)
+      bcrypt
+        .genSalt(10)
+        .then(salt => bcrypt.hash(randomPassword, salt))
+        .then(hash => User.create({
+          name,
+          email,
+          password: hash,
+          isAdmin: 0,
+          isTutor: 0
+        }))
+        .then(user => {
+          user.strategy = 'localStategylocal'
+          cb(null, user)
+        })
+        .catch(err => cb(err, false))
+    })
+}
 ))
 
 passport.serializeUser((user, cb) => {
@@ -67,9 +66,15 @@ passport.serializeUser((user, cb) => {
 passport.deserializeUser((id, cb) => {
   User.findByPk(id)
     .then(user => {
+      if (!user) {
+        return cb(new Error('此用戶不存在'))
+      }
       user = user.toJSON()
       console.log(user)
       return cb(null, user)
+    })
+    .catch(err => {
+      return cb(err)
     })
 })
 

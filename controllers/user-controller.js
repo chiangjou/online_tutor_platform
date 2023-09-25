@@ -95,7 +95,7 @@ const userController = {
       })
     ])
       .then(([tutor, courses]) => {
-        if (!tutor) throw new Error("找不到該名老師")
+        if (!tutor) throw new Error('找不到該名老師')
 
         // 已評價的課程
         const ratedCourses = courses.filter(courseData => courseData.rating > 0)
@@ -258,9 +258,9 @@ const userController = {
       nation: '國籍',
       tutorIntroduction: '關於我',
       teachingStyle: '教學風格',
-      teachingLink: '課程視訊連結',
+      teachingLink: '課程視訊連結'
     }
-    let missingData = []
+    const missingData = []
 
     try {
       // 檢查必填資料是否為空
@@ -275,18 +275,18 @@ const userController = {
       }
       // 查找用戶
       const user = await User.findByPk(userId, {
-        attributes: { exclude: ['password'] },
+        attributes: { exclude: ['password'] }
       })
       if (!user) {
         throw new Error('此用戶不存在')
       }
       // 更新 User 資料
-      const [updatedUser, filePath] = await Promise.all([
+      await Promise.all([
         user.update({
           name,
           avatar: file ? file.path : user.avatar,
           nation,
-          isTutor: 1,
+          isTutor: 1
         }),
         localFileHandler(file)
       ])
@@ -297,10 +297,10 @@ const userController = {
         duration,
         teachingTime: teachingTimeString,
         teachingLink,
-        userId,
+        userId
       })
 
-      req.flash('success_messages', '申請成功');
+      req.flash('success_messages', '申請成功')
       return res.redirect(`/tutor/${req.params.id}`)
     } catch (err) {
       return next(err)

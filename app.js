@@ -31,9 +31,9 @@ app.use(express.urlencoded({ extended: true }))
 
 // session
 app.use(session({
-  secret: process.env.SESSION_SECRET, 
-  resave: false, 
-  saveUninitialized: false 
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
 }))
 
 // passport

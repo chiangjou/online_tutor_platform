@@ -2,25 +2,24 @@
 const faker = require('faker')
 const { DateTime } = require('luxon')
 
-function getRandomPastTime() {
+function getRandomPastTime () {
   // 過去一年的隨機時間
-  const now = DateTime.now();
-  const pastDate = faker.date.between(now.minus({ years: 1 }).toJSDate(), now.toJSDate());
+  const now = DateTime.now()
+  const pastDate = faker.date.between(now.minus({ years: 1 }).toJSDate(), now.toJSDate())
 
   // 18:00 到 22:00 之間每小時的 30 分或每整點
   const randomHours = Math.floor(Math.random() * 4) + 18
   const randomMinutes = Math.random() < 0.5 ? 0 : 30
 
   // 轉換台北時區
-  const taipeiTime = DateTime.fromJSDate(pastDate, { zone: "Asia/Taipei" })
+  const taipeiTime = DateTime.fromJSDate(pastDate, { zone: 'Asia/Taipei' })
   const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 })
 
   // 格式化時間為 "YYYY-MM-DD HH:mm:ss"
-  const formattedPastTime = formattedTime.toFormat("yyyy-MM-dd HH:mm:ss")
+  const formattedPastTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
 
   return formattedPastTime
 }
-
 
 function getRandomFutureTime () {
   // 未來兩週的隨機時間
@@ -34,11 +33,11 @@ function getRandomFutureTime () {
   const randomMinutes = Math.random() < 0.5 ? 0 : 30
 
   // 轉換台北時區
-  const taipeiTime = DateTime.fromJSDate(futureDate, { zone: "Asia/Taipei" })
+  const taipeiTime = DateTime.fromJSDate(futureDate, { zone: 'Asia/Taipei' })
   const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 })
 
   // 格式化時間為 "YYYY-MM-DD HH:mm:ss"
-  const formattedFutureTime = formattedTime.toFormat("yyyy-MM-dd HH:mm:ss")
+  const formattedFutureTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
 
   return formattedFutureTime
 }
@@ -106,7 +105,7 @@ module.exports = {
             })
           })
       })
-      
+
       await queryInterface.bulkInsert('Courses', courses, {})
       console.log('Courses table seeding completed successfully.')
     } catch (error) {

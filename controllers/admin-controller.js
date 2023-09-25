@@ -41,7 +41,7 @@ const adminController = {
       raw: true,
       nest: true,
       attributes: { exclude: ['password'] },
-      where: { 
+      where: {
         [Op.and]: [
           { isAdmin: 0 },
           { isTutor: 0 }
@@ -88,7 +88,7 @@ const adminController = {
       .then(users => {
         const data = users.rows.map(user => ({
           ...user,
-          createdAt: dayjs(user.createdAt).format('YYYY-MM-DD'),
+          createdAt: dayjs(user.createdAt).format('YYYY-MM-DD')
         }))
         return res.render('admin/tutors', {
           data,

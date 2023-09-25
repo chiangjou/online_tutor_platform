@@ -1,6 +1,5 @@
 const { User, Tutor, Course } = require('../models')
 const dayjs = require('dayjs')
-const { localFileHandler } = require('../helpers/file-helpers')
 
 const tutorController = {
   getProfile: (req, res, next) => {
@@ -82,7 +81,7 @@ const tutorController = {
           teachingStyle,
           duration,
           teachingTime: teachingTimeString,
-          teachingLink,
+          teachingLink
         })
       })
       .then(() => {
