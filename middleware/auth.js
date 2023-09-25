@@ -3,6 +3,7 @@ const authenticated = (req, res, next) => {
   if (ensureAuthenticated(req)) {
     return next()
   }
+  req.flash('error_messages', '請先登入')
   res.redirect('/signin')
 }
 const authenticatedAdmin = (req, res, next) => {
@@ -10,6 +11,7 @@ const authenticatedAdmin = (req, res, next) => {
     if (getUser(req).isAdmin) return next()
     res.redirect('/')
   } else {
+    req.flash('error_messages', '請先登入')
     res.redirect('/signin')
   }
 }

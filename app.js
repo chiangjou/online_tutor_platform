@@ -27,7 +27,11 @@ app.use(express.static('public'))
 app.use(express.urlencoded({ extended: true }))
 
 // session
-app.use(session({ secret: SESSION_SECRET, resave: false, saveUninitialized: false }))
+app.use(session({
+  secret: SESSION_SECRET, 
+  resave: false, 
+  saveUninitialized: false 
+}))
 
 // passport
 app.use(passport.initialize())

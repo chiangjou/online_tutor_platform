@@ -12,6 +12,7 @@ const userController = {
     const { name, email, password, passwordCheck } = req.body
     if (!name || !email || !password || !passwordCheck) throw new Error('所有欄位皆為必填')
     if (password !== passwordCheck) throw new Error('密碼不相符，請再次確認密碼')
+    if (!email.includes('@')) throw new Error('Email 格式錯誤，應包含「@」符號')
 
     return User.findOne({
       where: { email }
@@ -39,7 +40,7 @@ const userController = {
     res.render('signin')
   },
   signIn: (req, res) => {
-    req.flash('success_messages', '成功登入！')
+    req.flash('success_messages', '成功登入')
     res.redirect('/tutors')
   },
   logout: (req, res) => {
