@@ -22,8 +22,9 @@ router.get('/signin', userController.signInPage)
 router.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
 router.get('/logout', userController.logout)
 
-router.get('/tutors', authenticated, userController.getTutors)
+router.get('/tutors/search', authenticated, userController.searchTutors)
 router.get('/tutors/:id', authenticated, userController.getTutor)
+router.get('/tutors', authenticated, userController.getTutors)
 
 router.get('/users/:id', authenticated, userController.getProfile)
 router.get('/users/:id/edit', userController.editProfile)
@@ -37,7 +38,7 @@ router.put('/tutor/:id', authenticated, tutorController.putProfile)
 router.get('/tutor/:id', authenticated, tutorController.getProfile)
 
 router.post('/tutors/:id/booking', authenticated, courseController.bookCourse)
-router.post('/coures/:id/rating', authenticated, courseController.rateCourse)
+router.post('/courses/:id/rating', authenticated, courseController.rateCourse)
 
 router.use('/', (req, res) => res.redirect('/tutors'))
 router.use('/', generalErrorHandler)

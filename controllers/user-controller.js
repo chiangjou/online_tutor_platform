@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor, Course } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
+const Sequelize = require("sequelize")
+const { Op } = Sequelize
 const dayjs = require('dayjs')
 
 const userController = {
@@ -302,6 +304,41 @@ const userController = {
 
       req.flash('success_messages', '申請成功')
       return res.redirect(`/tutor/${req.params.id}`)
+    } catch (err) {
+      return next(err)
+    }
+  },
+  searchTutors: async (req, res, next) => {
+    try {
+      const keyword = req.query.keyword.trim()
+      const DEFAULT_LIMIT = 6
+      const page = Number(req.query.page) || 1
+      const limit = Number(req.query.limit) || DEFAULT_LIMIT
+      const offset = getOffset(limit, page)
+
+      const tutors = await Tutor.findAndCountAll({
+        raw: true,
+        nest: true,
+        include: [
+          {
+            model: User,
+            attributes: ['name', 'avatar', 'nation']
+          }
+        ],
+        limit,
+        offset,
+        where: {
+          '$User.name$': { [Op.like]: `%${keyword}%` }
+        }
+      })
+
+      if (tutors.rows.length === 0) throw new Error(`找不到 ${keyword} 老師`)
+
+      return res.render('tutors', {
+        data: tutors.rows,
+        pagination: getPagination(limit, page, tutors.count),
+        keyword
+      })
     } catch (err) {
       return next(err)
     }
