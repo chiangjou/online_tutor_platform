@@ -1,3 +1,7 @@
+i {
+  color: #308882;
+}
+
 .card {
   max-height: 500px;
   overflow-y: auto;
@@ -41,4 +45,11 @@
 #back-btn {
   text-decoration: none;
   color: white;
+}
+
+.form-avatar,
+.form-default-avatar {
+  width: 50px;
+  height: 50px;
+  display: block;
 }

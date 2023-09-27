@@ -8,24 +8,26 @@
 
     {{!-- 名字 --}}
     <div class=" form-row mb-4">
-      <i class="fa-solid fa-user" style="color: #308882;"></i>
+      <i class="fa-solid fa-user"></i>
       <label class="form-label" for="name"><strong>名字</strong></label>
       <input class="form-control" type="text" name="name" id="name" placeholder="輸入名字" value="{{user.name}}">
     </div>
 
     {{!-- 頭像 --}}
     <div class="form-row mb-4">
-      <i class="fa-solid fa-image" style="color: #308882;"></i>
+      <i class="fa-solid fa-image"></i>
       <label class="form-label" for="avatar"><strong>更新頭像</strong></label>
-      <div class="m-2" style="display: block;">
-        <img src="{{user.avatar}}" id="current-avatar" alt="Current Avatar" style="width: 50px; height: 50px;">
-      </div>
+      {{#if user.avatar}}
+      <img class="form-avatar m-2" src="{{user.avatar}}" alt="avatar" title="avatar">
+      {{else}}
+      <img class="form-default-avatar m-2" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
+      {{/if}}
       <input class="form-control" type="file" class="form-control-file" id="avatar" name="avatar">
     </div>
 
     {{!-- 國家 --}}
     <div class="form-row mb-4">
-      <i class="fa-solid fa-flag-checkered" style="color: #308882;"></i>
+      <i class="fa-solid fa-flag-checkered"></i>
       <label class="form-label" for="nation"><strong>國家</strong></label>
       <select class="form-control" id="nation" name="nation" onchange="updateNationValue(this)">
         <option value="{{user.nation}}">{{user.nation}}</option>
@@ -38,7 +40,7 @@
 
     {{!-- 自我介紹 --}}
     <div class="form-row mb-4">
-      <i class="fa-solid fa-child-reaching" style="color: #308882;"></i>
+      <i class="fa-solid fa-child-reaching"></i>
       <label class="form-label" for="introduction"><strong>關於我</strong></label>
       <textarea class="form-control" id="introduction" name="introduction" rows="3">{{user.introduction}}</textarea>
     </div>
@@ -48,8 +50,6 @@
       <button class="custom-solid-button mx-2"><a id="back-btn" href="javascript:history.back()">返回</a></button>
     </div>
   </form>
-
-
 </div>
 
 <script src="/javascripts/country.js"></script>
