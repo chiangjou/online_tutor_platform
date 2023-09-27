@@ -288,36 +288,33 @@ const userController = {
       teachingLink: '課程視訊連結'
     }
     const missingData = []
-
     try {
-      // 檢查必填資料是否為空
       for (const data in requiredData) {
         if (!req.body[data]) {
           missingData.push(requiredData[data])
         }
       }
-      // 未填資料有兩個以上
-      if (missingData.length >= 2) {
+      if (missingData.length > 0) {
         throw new Error(`「${missingData.join('、 ')}」為必填`)
       }
-      // 查找用戶
-      const user = await User.findByPk(userId, {
-        attributes: { exclude: ['password'] }
-      })
-      if (!user) {
-        throw new Error('此用戶不存在')
-      }
-      // 更新 User 資料
-      await Promise.all([
-        user.update({
-          name,
-          avatar: file ? file.path : user.avatar,
-          nation,
-          isTutor: 1
-        }),
+
+      const [user, filePath] = await Promise.all([
+        User.findByPk(req.params.id, { attributes: { exclude: ['password'] } }),
         localFileHandler(file)
       ])
-      // 建立 Tutor
+
+      if (!user) {
+        return res.status(404).send('無該名使用者')
+      }
+
+      // 更新 User 資料
+      await user.update({
+          name,
+          avatar: filePath || user.avatar,
+          nation,
+          isTutor: 1
+        })
+      // 建立 Tutor 資料
       await Tutor.create({
         tutorIntroduction,
         teachingStyle,
