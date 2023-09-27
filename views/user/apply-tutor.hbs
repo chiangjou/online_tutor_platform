@@ -6,11 +6,11 @@
   <form enctype="multipart/form-data" class="form-signup my-4" action="/users/{{user.id}}/apply" method="POST"
     style="width: 90%;">
 
-    {{!-- 姓名 --}}
+    {{!-- 名字 --}}
     <div class=" form-row mb-4">
       <i class="fa-solid fa-user" style="color: #308882;"></i>
-      <label class="form-label" for="name"><strong>姓名</strong></label>
-      <input class="form-control" type="text" name="name" id="name" placeholder="Enter name" value="{{user.name}}">
+      <label class="form-label" for="name"><strong>名字</strong></label>
+      <input class="form-control" type="text" name="name" id="name" placeholder="輸入名字" value="{{user.name}}">
     </div>
 
     {{!-- 頭像 --}}
@@ -21,10 +21,10 @@
         value="{{user.avatar}}">
     </div>
     
-    {{!-- 國籍 --}}
+    {{!-- 國家 --}}
     <div class="form-row mb-4">
       <i class="fa-solid fa-flag-checkered" style="color: #308882;"></i>
-      <label class="form-label" for="nation"><strong>國籍</strong></label>
+      <label class="form-label" for="nation"><strong>國家</strong></label>
       <input class="form-control" id="nation" name="nation" rows="3" value="{{user.nation}}">
     </div>
 
@@ -99,5 +99,4 @@
       <button class="custom-button">提出申請</button>
     </div>
   </form>
-</div>
 </div>

@@ -1,24 +1,55 @@
-<form action="/users/{{user.id}}?_method=PUT" method="POST" enctype="multipart/form-data">
-  <div class="mb-4 text-center">
-    <h1 class="h3 font-weight-normal mb-3">編輯個人資料</h1>
-  </div>
-  <div class=" form-row mb-3">
-    <label class="form-label" for="name">姓名</label>
-    <input class="form-control" type="text" name="name" id="name" placeholder="Enter name" value="{{user.name}}">
-  </div>
-  <div class="form-row mb-3">
-    <label class="form-label" for="avatar">頭像</label>
-    <input class="form-control" type="file" class="form-control-file" id="avatar" name="avatar" value="{{user.avatar}}">
-  </div>
-  <div class="form-row mb-3">
-    <label class="form-label" for="nation">國籍</label>
-    <input class="form-control" id="nation" name="nation" rows="3" value="{{user.nation}}">
-  </div>
-  <div class="form-row mb-3">
-    <label class="form-label" for="introduction">自我介紹</label>
-    <textarea class="form-control" id="introduction" name="introduction" rows="3">{{user.introduction}}</textarea>
-  </div>
-  <hr>
-  <button type="submit" class="btn btn-primary">儲存</button>
-</form>
-<a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
+<div class="mb-4 text-center">
+  <h3 class="font-weight-normal">修改個人資料</h3>
+</div>
+
+<div class="card my-4 d-flex align-items-center">
+  <form action="/users/{{user.id}}?_method=PUT" method="POST" enctype="multipart/form-data"
+    class="form-edit-profile my-4" style="width: 90%;">
+
+    {{!-- 名字 --}}
+    <div class=" form-row mb-4">
+      <i class="fa-solid fa-user" style="color: #308882;"></i>
+      <label class="form-label" for="name"><strong>名字</strong></label>
+      <input class="form-control" type="text" name="name" id="name" placeholder="輸入名字" value="{{user.name}}">
+    </div>
+
+    {{!-- 頭像 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-image" style="color: #308882;"></i>
+      <label class="form-label" for="avatar"><strong>更新頭像</strong></label>
+      <div class="m-2" style="display: block;">
+        <img src="{{user.avatar}}" id="current-avatar" alt="Current Avatar" style="width: 50px; height: 50px;">
+      </div>
+      <input class="form-control" type="file" class="form-control-file" id="avatar" name="avatar">
+    </div>
+
+    {{!-- 國家 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-flag-checkered" style="color: #308882;"></i>
+      <label class="form-label" for="nation"><strong>國家</strong></label>
+      <select class="form-control" id="nation" name="nation" onchange="updateNationValue(this)">
+        <option value="{{user.nation}}">{{user.nation}}</option>
+        {{#each countries}}
+        <option value="{{this}}" {{#if (eq this user.nation)}}selected{{/if}}>{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <input type="hidden" id="hiddenNation" name="hiddenNation" value="{{user.nation}}">
+
+    {{!-- 自我介紹 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-child-reaching" style="color: #308882;"></i>
+      <label class="form-label" for="introduction"><strong>關於我</strong></label>
+      <textarea class="form-control" id="introduction" name="introduction" rows="3">{{user.introduction}}</textarea>
+    </div>
+
+    <div class="text-center my-5">
+      <button class="custom-button mx-2" onclick="submitForm()">儲存</button>
+      <button class="custom-solid-button mx-2"><a id="back-btn" href="javascript:history.back()">返回</a></button>
+    </div>
+  </form>
+
+
+</div>
+
+<script src="/javascripts/country.js"></script>

@@ -1,19 +1,26 @@
 <div class="row mb-5">
+  {{!-- 左側 --}}
   <div class="col-md-4">
-    <img class="img-responsive center-block mb-5" src="{{user.avatar}}"
-      style="width: 250px; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
-    <div class="card-body">
-      <h1>{{user.name}}</h1>
-      <strong>Nation</strong>
-      <p style="white-space: break-spaces;">{{user.nation}}</p>
+    {{!-- 頭像 --}}
+    {{#if user.avatar}}
+    <img class="avatar" src="{{user.avatar}}" alt="avatar" title="avatar">
+    {{else}}
+    <img class="default-avatar" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
+    {{/if}}
 
-      <strong>About Me</strong>
-      <p style="white-space: break-spaces;">{{user.introduction}}</p>
-      <br>
-      <a class="btn btn-primary" href="/users/{{user.id}}/edit">edit</a>
-      <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
-    </div>
+    {{!-- 姓名 --}}
+    <h2>{{user.name}}</h2>
+    {{!-- <strong>Nation</strong> --}}
+    <p>{{user.nation}}</p>
+
+    <strong>About Me</strong>
+    <p style="white-space: break-spaces;">{{user.introduction}}</p>
+    <br>
+    <a class="btn btn-primary" href="/users/{{user.id}}/edit">edit</a>
+    <a class="btn btn-outline-secondary" href="javascript:history.back()">Back</a>
   </div>
+
+  {{!-- 右側 --}}
   <div class="col-md-8">
     {{!-- course info --}}
     <div class="row mb-5">

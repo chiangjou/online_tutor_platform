@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor, Course } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
-const Sequelize = require("sequelize")
+const Sequelize = require('sequelize')
 const { Op } = Sequelize
 const dayjs = require('dayjs')
 
@@ -152,86 +152,111 @@ const userController = {
       })
       .catch(err => next(err))
   },
-  getProfile: (req, res, next) => {
+  getProfile: async (req, res, next) => {
     const userId = req.user.id
-    if (userId !== Number(req.params.id)) throw new Error('無法查看其他使用者頁面')
+    if (userId !== Number(req.params.id)) {
+      return res.status(403).send('無法查看其他使用者頁面')
+    }
 
-    return Promise.all([
-      User.findByPk(userId, {
-        attributes: { exclude: ['password'] },
-        raw: true
-      }),
-      Course.findAll({
-        raw: true,
-        nest: true,
-        where: { userId },
-        order: [['time', 'ASC']],
-        include: [{
-          model: Tutor,
-          attributes: ['id', 'userId', 'teachingLink'],
+    try {
+      const [user, courses] = await Promise.all([
+        User.findByPk(userId, {
+          attributes: { exclude: ['password'] },
+          raw: true
+        }),
+        Course.findAll({
+          raw: true,
+          nest: true,
+          where: { userId },
+          order: [['time', 'ASC']],
           include: [{
-            model: User,
-            attributes: ['name', 'avatar']
+            model: Tutor,
+            attributes: ['id', 'userId', 'teachingLink'],
+            include: [{
+              model: User,
+              attributes: ['name', 'avatar']
+            }]
           }]
-        }]
-      })
-    ])
-      .then(([user, courses]) => {
-        if (!user) throw new Error('此用戶不存在')
+        })
+      ])
 
-        const pastCourses = courses.filter(courseItem => {
-          return new Date(courseItem.time) < new Date()
-        }).map(courseItem => {
-          courseItem.time = dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
-          return courseItem
-        }).reverse()
-        const futureCourses = courses.filter(courseItem => {
-          return new Date(courseItem.time) >= new Date()
-        }).map(courseItem => {
-          courseItem.time = dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
-          return courseItem
-        })
-        return res.render('user/profile', {
-          user, pastCourses, futureCourses
-        })
+      if (!user) {
+        return res.status(404).send('無該名使用者')
+      }
+
+      // 格式化日期
+      function formatCourseTime (courses) {
+        return courses.map(courseItem => ({
+          ...courseItem,
+          time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
+        }))
+      }
+      const pastCourses = formatCourseTime(courses.filter(courseItem => new Date(courseItem.time) < new Date())).reverse()
+      const futureCourses = formatCourseTime(courses.filter(courseItem => new Date(courseItem.time) >= new Date()))
+
+      return res.render('user/profile', {
+        user,
+        pastCourses,
+        futureCourses
       })
-      .catch(err => next(err))
+    } catch (err) {
+      next(err)
+    }
   },
-  editProfile: (req, res, next) => {
-    const userId = req.user.id
-    return User.findByPk(userId, {
-      raw: true
-    })
-      .then(user => {
-        if (!user) throw new Error('此用戶不存在')
-        return res.render('user/edit-profile', {
-          user
-        })
-      })
-      .catch(err => next(err))
+  editProfile: async (req, res, next) => {
+    try {
+      const userId = req.user.id
+      const user = await User.findByPk(userId, { raw: true })
+
+      if (!user) {
+        return res.status(404).send('無該名使用者')
+      }
+
+      return res.render('user/edit-profile', { user })
+    } catch (err) {
+      next(err)
+    }
   },
-  putProfile: (req, res, next) => {
+  putProfile: async (req, res, next) => {
     const { name, nation, introduction } = req.body
-    if (!name) throw new Error('Name is required!')
     const { file } = req
-    return Promise.all([
-      User.findByPk(req.params.id, { attributes: { exclude: ['password'] } }),
-      localFileHandler(file)
-    ])
-      .then(([user, filePath]) => {
-        if (!user) throw new Error('此用戶不存在')
-        return user.update({
-          name,
-          nation,
-          introduction,
-          avatar: filePath || user.avatar
-        })
+    const requiredData = {
+      name: '名字',
+      nation: '國籍',
+      introduction: '關於我'
+    }
+    const missingData = []
+    try {
+      for (const data in requiredData) {
+        if (!req.body[data]) {
+          missingData.push(requiredData[data])
+        }
+      }
+      if (missingData.length > 0) {
+        throw new Error(`「${missingData.join('、 ')}」為必填`)
+      }
+
+      const [user, filePath] = await Promise.all([
+        User.findByPk(req.params.id, { attributes: { exclude: ['password'] } }),
+        localFileHandler(file)
+      ])
+
+      if (!user) {
+        return res.status(404).send('無該名使用者')
+      }
+
+      await user.update({
+        name,
+        nation,
+        introduction,
+        avatar: filePath || user.avatar
       })
-      .then(() => {
-        req.flash('success_messages', '成功更新個人資料')
-        return res.redirect(`/users/${req.params.id}`)
-      })
-      .catch(err => next(err))
+
+      req.flash('success_messages', '成功修改個人資料')
+      return res.redirect(`/users/${req.params.id}`)
+    } catch (err) {
+      next(err)
+    }
   },
   getApply: async (req, res, next) => {
     try {
