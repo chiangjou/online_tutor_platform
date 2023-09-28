@@ -1,105 +1,71 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-8">
-      <div class="row" id="image-name">
-        <div class="col-md-5">
-          <img class="img-responsive center-block" src="{{tutor.User.avatar}}"
-            style="width: 250px; margin-bottom: 25px; transition: opacity 0.5s; opacity:0;"
-            onload="this.style.opacity=1;">
-        </div>
-        <div class="col-md-5">
-          <h2>{{tutor.User.name}}</h2>
-          <h4>評價：
-            {{#if avgRating}}
-            <strong class="class-rate badge bg-primary">{{avgRating}}</strong>
-            {{else}}
-            <span>目前沒有評價</span>
-            {{/if}}
-          </h4>
-          <h4>排課時間：{{#if availableTimes}}週 {{availableTimes}}{{else}}目前沒有排課{{/if}}</h4>
-        </div>
-      </div>
-      <div id="introduction">
-        <h4>Introduction</h4>
-        <p>{{tutor.tutorIntroduction}}</p>
-      </div>
-      <div id="teachingStyle">
-        <h4>Teaching Style</h4>
-        <p>{{tutor.teachingStyle}}</p>
-      </div>
-      <div id="lessonHistory">
-        <h4>Lesson History</h4>
-        {{#if ratedCourses}}
-        <div>
-          {{#each ratedCourses}}
-          <div class="class-info m-2">
-            <strong class="class-rate badge bg-primary">{{this.rating}}</strong>
-            ：
-            <span class="class-message">{{#if this.comment}}{{this.comment}}{{else}}沒有留下評論{{/if}}</span>
-          </div>
-          {{/each}}
-        </div>
+<div class="row mb-5">
+  {{!-- 左側 --}}
+  <div class="col-md-8">
+    <div class="d-flex flex-direction-row">
+      <div class="user-avatar mb-5">
+        {{#if tutor.User.avatar}}
+        <img class="avatar" src="{{tutor.User.avatar}}" alt="avatar" title="avatar">
         {{else}}
-        <p>目前沒有評價</p>
+        <img class="default-avatar" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
         {{/if}}
       </div>
 
-      <div class="col-md-3">
-        <form action="/tutors/{{tutor.id}}/booking" method="POST">
-          <h4>預約上課</h4>
-          <select name="bookDate" id="bookDate" class="form-control">
-            <option value="">選擇時間</option>
-            {{#each unbookedCourses}}
-            <option value="{{this}}">{{this}}</option>
-            {{/each}}
-          </select>
-
-          <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#book-class-model">
-            預約
-          </button>
-
-          <!-- Modal -->
-          <div class="modal fade" id="book-class-model" tabindex="-1" aria-labelledby="exampleModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">預約成功</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  <p id="booked-date">時間：</p>
-                  <p>老師：{{tutor.User.name}}</p>
-                  <p>上課連結：{{tutor.teachingLink}}</p>
-                </div>
-                <div class="modal-footer">
-                  <button id="close-booked-button" type="button" class="btn btn-secondary"
-                    data-bs-dismiss="modal">OK</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
+      <div class="user-info mb-5 mx-5">
+        <h3>{{tutor.User.name}}</h3>
+        <p>{{tutor.User.nation}}</p>
+        <div>
+          {{#if avgRating}}
+          <strong class="class-rate badge">{{avgRating}}</strong>
+          {{else}}
+          <span>目前沒有評價</span>
+          {{/if}}
+        </div>
       </div>
     </div>
+
+    <h5>關於我</h5>
+    <p style="white-space: break-spaces;">{{tutor.tutorIntroduction}}</p>
+    <hr>
+    <h5>教學風格</h5>
+    <p style="white-space: break-spaces;">{{tutor.teachingStyle}}</p>
+    <hr>
+    <h5>學生評語</h5>
+    {{#if ratedCourses}}
+    <div>
+      {{#each ratedCourses}}
+      <div class="class-info m-2">
+        <strong class="class-rate badge">{{this.rating}}</strong>
+        ：
+        <span class="class-message">{{#if this.comment}}{{this.comment}}{{else}}沒有留下評論{{/if}}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{else}}
+    <p>目前沒有評價</p>
+    {{/if}}
+  </div>
+
+  {{!-- 右側 --}}
+  <div class="col-md-4">
+    <form action="/tutors/{{tutor.id}}/booking" method="POST">
+      <h4 class="mb-3">預約上課</h4>
+      <select name="bookDate" id="bookDate" class="form-control mb-3" style="font-size: 15px; padding: 8px">
+        <option value="">選擇時間</option>
+        {{#each unbookedCourses}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+
+      <!-- Button trigger modal -->
+      <div class="d-flex justify-content-end">
+        <button type="button" class="custom-solid-button" style="font-size: 15px; padding: 8px 12px"
+          data-bs-toggle="modal" data-bs-target="#book-class-model">
+          預約
+        </button>
+      </div>
+      {{> booking-modal}}
+    </form>
   </div>
 </div>
 
-
-<script>
-  const buttonElement = document.getElementById('book-class');
-  const selectElement = document.getElementById('bookDate');
-  const bookedDateElement = document.getElementById('booked-date');
-  const closeBookedButton = document.getElementById('close-booked-button');
-
-  selectElement.addEventListener('change', function () {
-    const selectedDate = this.value;
-    bookedDateElement.textContent = `時間：${selectedDate}`;
-  });
-
-  closeBookedButton.addEventListener('click', function () {
-    location.reload();
-  });
-
-</script>
+<script src="/javascripts/booking.js"></script>
