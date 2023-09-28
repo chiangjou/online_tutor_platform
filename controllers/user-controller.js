@@ -88,7 +88,6 @@ const userController = {
 
     Promise.all([tutorsPromise, topLearnersPromise])
       .then(([tutors, topLearners]) => {
-
         return res.render('tutors', {
           tutors: tutors.rows,
           topLearners,
@@ -205,7 +204,7 @@ const userController = {
       }
 
       // 格式化日期
-      function formatCourseTime(courses) {
+      function formatCourseTime (courses) {
         return courses.map(courseItem => ({
           ...courseItem,
           time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
@@ -388,4 +387,3 @@ const userController = {
 }
 
 module.exports = userController
-

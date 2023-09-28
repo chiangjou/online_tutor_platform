@@ -33,28 +33,37 @@ const courseController = {
       })
       .catch(err => next(err))
   },
-  rateCourse: (req, res, next) => {
-    const id = req.params.id
-    const userId = req.user.id
+  rateCourse: async (req, res, next) => {
+    const courseId = req.params.id
+    const currentUserId = req.user.id
     const { rating, comment } = req.body
-    if (!rating) throw new Error('請選擇評分')
 
-    Course.findByPk(id)
-      .then(courseData => {
-        if (!courseData) throw new Error('沒有此課程')
-        if (courseData.userId !== userId) throw new Error('沒有權限評價此課程')
-        if (courseData.time > Date.now()) throw new Error('課程結束才可評價')
+    try {
+      if (!rating) {
+        throw new Error('請選擇評分')
+      }
 
-        return courseData.update({
-          rating,
-          comment
-        })
-      })
-      .then(() => {
-        req.flash('success_messages', '評價成功')
-        return res.redirect(`/users/${req.user.id}`)
-      })
-      .catch(err => next(err))
+      const courseData = await Course.findByPk(courseId)
+
+      if (!courseData) {
+        throw new Error('沒有此課程')
+      }
+
+      if (courseData.userId !== currentUserId) {
+        throw new Error('沒有權限評價此課程')
+      }
+
+      if (courseData.time > Date.now()) {
+        throw new Error('課程結束才可以評價')
+      }
+
+      await courseData.update({ rating, comment })
+
+      req.flash('success_messages', '成功送出')
+      res.redirect(`/users/${req.user.id}`)
+    } catch (err) {
+      next(err)
+    }
   }
 }
 
