@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs')
-const { User, Tutor, Course } = require('../models')
+const { User, Tutor, Course, sequelize } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
 const Sequelize = require('sequelize')
@@ -56,7 +56,7 @@ const userController = {
     const limit = Number(req.query.limit) || DEFAULT_LIMIT
     const offset = getOffset(limit, page)
 
-    Tutor.findAndCountAll({
+    const tutorsPromise = Tutor.findAndCountAll({
       nest: true,
       raw: true,
       include: [
@@ -68,16 +68,36 @@ const userController = {
       limit,
       offset
     })
-      .then(tutors => {
-        const data = tutors.rows
+
+    // 學習時數前十名的學生
+    const topLearnersPromise = Course.findAll({
+      raw: true,
+      nest: true,
+      where: { isDone: true },
+      attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
+      group: ['userId'],
+      order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
+      limit: 10,
+      include: [
+        {
+          model: User,
+          attributes: ['name', 'avatar']
+        }
+      ]
+    })
+
+    Promise.all([tutorsPromise, topLearnersPromise])
+      .then(([tutors, topLearners]) => {
 
         return res.render('tutors', {
-          data,
+          tutors: tutors.rows,
+          topLearners,
           pagination: getPagination(limit, page, tutors.count)
         })
       })
       .catch(err => next(err))
   },
+
   getTutor: (req, res, next) => {
     const tutorId = req.params.id
 
@@ -185,7 +205,7 @@ const userController = {
       }
 
       // 格式化日期
-      function formatCourseTime (courses) {
+      function formatCourseTime(courses) {
         return courses.map(courseItem => ({
           ...courseItem,
           time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
@@ -309,11 +329,11 @@ const userController = {
 
       // 更新 User 資料
       await user.update({
-          name,
-          avatar: filePath || user.avatar,
-          nation,
-          isTutor: 1
-        })
+        name,
+        avatar: filePath || user.avatar,
+        nation,
+        isTutor: 1
+      })
       // 建立 Tutor 資料
       await Tutor.create({
         tutorIntroduction,
@@ -368,3 +388,4 @@ const userController = {
 }
 
 module.exports = userController
+

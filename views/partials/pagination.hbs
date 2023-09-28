@@ -1,0 +1,15 @@
+<div>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      {{#each pagination.pages}}
+      {{#ifCond this ../pagination.currentPage}}
+      <li class="page-item active"><a class="page-link" href="#">{{this}}</a></li>
+      {{else}}
+      <li class="page-item">
+        <a class="page-link" href="/tutors?page={{this}}">{{this}}</a>
+      </li>
+      {{/ifCond}}
+      {{/each}}
+    </ul>
+  </nav>
+</div>

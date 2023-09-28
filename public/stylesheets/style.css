@@ -22,7 +22,7 @@ i {
 }
 
 .custom-solid-button {
-  background-color:#308882;
+  background-color: #308882;
   border: 2px solid #308882;
   color: white;
   padding: 10px 20px;
@@ -36,7 +36,8 @@ i {
   color: white;
 }
 
-.avatar, .default-avatar {
+.avatar,
+.default-avatar {
   width: 200px;
   height: 200px;
   border-radius: 50%;
@@ -52,4 +53,61 @@ i {
   width: 50px;
   height: 50px;
   display: block;
+}
+
+#search-bar {
+  border-radius: 10px;
+}
+
+.tutor-list a {
+  text-decoration: none;
+  color: black;
+}
+
+.tutor-list-avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 10%;
+}
+
+.topLeaners-list-title {
+  background-color: #78aeaa;
+  color: white;
+  border-radius: 10px;
+  margin: 15px auto;
+  padding: 10px;
+  font-weight: 400;
+  width: 70%;
+}
+
+.topLearners-list-avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.list-group-item {
+  padding: 10px;
+}
+
+.badge {
+  background-color: #78aeaa;
+  font-weight: 400;
+}
+
+.page-link {
+  border: 1px solid #0e4d4a;
+  color: #308882;
+}
+
+.active>.page-link,
+.page-link.active {
+  border: 1px solid #0e4d4a;
+  background-color: #308882;
+}
+
+.pagination a.page-link:hover {
+  color: #0e4d4a;
+  background-color: #f0f0f0;
+  border-color: #0e4d4a;
 }
