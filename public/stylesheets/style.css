@@ -45,8 +45,14 @@ i {
 
 #back-btn {
   text-decoration: none;
-  color: white;
+  color: #0e4d4a;
 }
+
+#back-btn:hover {
+  text-decoration: none;
+  color: white
+}
+
 
 .form-avatar,
 .form-default-avatar {
@@ -129,7 +135,8 @@ i {
   justify-content: center;
 }
 
-#course-card .tutor-avatar img {
+#course-card .tutor-avatar img,
+#course-card .user-avatar img {
   width: 50px;
   height: 50px
 }
