@@ -232,7 +232,7 @@ const userController = {
       }
 
       // 格式化日期
-      function formatCourseTime (courses) {
+      function formatCourseTime(courses) {
         return courses.map(courseItem => ({
           ...courseItem,
           time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
@@ -379,13 +379,34 @@ const userController = {
   },
   searchTutors: async (req, res, next) => {
     try {
-      const keyword = req.query.keyword.trim()
-      const DEFAULT_LIMIT = 6
-      const page = Number(req.query.page) || 1
-      const limit = Number(req.query.limit) || DEFAULT_LIMIT
-      const offset = getOffset(limit, page)
+      const keyword = req.query.keyword.trim();
+      const DEFAULT_LIMIT = 6;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || DEFAULT_LIMIT;
+      const offset = getOffset(limit, page);
 
-      const tutors = await Tutor.findAndCountAll({
+      // 學習時數前十名的學生
+      const topLearners = await Course.findAll({
+        raw: true,
+        nest: true,
+        where: { isDone: true },
+        attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
+        group: ['userId'],
+        order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
+        limit: 10,
+        include: [
+          {
+            model: User,
+            attributes: ['name', 'avatar'],
+            where: {
+              isAdmin: false
+            }
+          }
+        ]
+      });
+
+      // 搜尋老師
+      const tutors = await Tutor.findAll({
         raw: true,
         nest: true,
         include: [
@@ -395,23 +416,40 @@ const userController = {
           }
         ],
         limit,
-        offset,
-        where: {
-          '$User.name$': { [Op.like]: `%${keyword}%` }
+        offset
+      })
+
+        const tutorsLowerCase = tutors.map(tutor => {
+          return{
+            ...tutor,
+            name: tutor.User.name.toLowerCase(),
+            nation: tutor.User.nation.toLowerCase(),
+            tutorIntroduction: tutor.tutorIntroduction.toLowerCase(),
+            teachingStyle: tutor.teachingStyle.toLowerCase()
+          }
+        })
+
+        const searchedTutors = tutorsLowerCase.filter(tutor => {
+          return (
+            tutor.name.includes(keyword) || tutor.nation.includes(keyword) || tutor.tutorIntroduction.includes(keyword) || tutor.teachingStyle.includes(keyword)
+          )
+        })
+
+        if (searchedTutors.length === 0) {
+          throw new Error(`沒有符合關鍵字「${keyword}」的老師`);
         }
-      })
 
-      if (tutors.rows.length === 0) throw new Error(`找不到 ${keyword} 老師`)
-
-      return res.render('tutors', {
-        data: tutors.rows,
-        pagination: getPagination(limit, page, tutors.count),
-        keyword
-      })
+        return res.render('tutors', {
+          tutors: searchedTutors,
+          keyword,
+          topLearners,
+          pagination: getPagination(limit, page, searchedTutors.length)
+        })
     } catch (err) {
-      return next(err)
+      return next(err);
     }
   }
 }
 
 module.exports = userController
+
