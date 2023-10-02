@@ -1,7 +1,8 @@
 <div class="row mb-5">
-  {{!-- 左側 --}}
+  {{!-- 左側老師資訊 --}}
   <div class="col-md-8">
     <div class="d-flex flex-direction-row">
+      {{!-- 頭像 --}}
       <div class="user-avatar mb-5">
         {{#if tutor.User.avatar}}
         <img class="avatar" src="{{tutor.User.avatar}}" alt="avatar" title="avatar">
@@ -11,32 +12,38 @@
       </div>
 
       <div class="user-info mb-5 mx-5">
+        {{!-- 名字 --}}
         <h3>{{tutor.User.name}}</h3>
+        {{!-- 國家 --}}
         <p>{{tutor.User.nation}}</p>
+        {{!-- 評分 --}}
         <div>
           {{#if avgRating}}
-          <strong class="class-rate badge">{{avgRating}}</strong>
+          <strong class="course-rating badge">{{avgRating}}</strong>
           {{else}}
-          <span>目前沒有評價</span>
+          <strong class="course-rating badge">新老師</strong>
           {{/if}}
         </div>
       </div>
     </div>
 
+    {{!-- 自我介紹 --}}
     <h5>關於我</h5>
     <p style="white-space: break-spaces;">{{tutor.tutorIntroduction}}</p>
     <hr>
+    {{!-- 教學風格 --}}
     <h5>教學風格</h5>
     <p style="white-space: break-spaces;">{{tutor.teachingStyle}}</p>
     <hr>
+    {{!-- 學生評語 --}}
     <h5>學生評語</h5>
     {{#if ratedCourses}}
     <div>
       {{#each ratedCourses}}
       <div class="class-info m-2">
-        <strong class="class-rate badge">{{this.rating}}</strong>
+        <strong class="course-rating badge">{{this.rating}}</strong>
         ：
-        <span class="class-message">{{#if this.comment}}{{this.comment}}{{else}}沒有留下評論{{/if}}</span>
+        <span class="course-comment">{{#if this.comment}}{{this.comment}}{{else}}沒有留下評論{{/if}}</span>
       </div>
       {{/each}}
     </div>
@@ -45,7 +52,7 @@
     {{/if}}
   </div>
 
-  {{!-- 右側 --}}
+  {{!-- 右側預約課程 --}}
   <div class="col-md-4">
     <form action="/tutors/{{tutor.id}}/booking" method="POST">
       <h4 class="mb-3">預約上課</h4>
@@ -55,15 +62,33 @@
         <option value="{{this}}">{{this}}</option>
         {{/each}}
       </select>
-
+      
       <!-- Button trigger modal -->
       <div class="d-flex justify-content-end">
         <button type="button" class="custom-solid-button" style="font-size: 15px; padding: 8px 12px"
-          data-bs-toggle="modal" data-bs-target="#book-class-model">
+          data-bs-toggle="modal" data-bs-target="#book-course-model">
           預約
         </button>
       </div>
-      {{> booking-modal}}
+      <div class="modal fade" id="book-course-model" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">預約成功</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p id="booked-date">上課時間：</p>
+              <p>授課老師：{{tutor.User.name}}</p>
+              <p>課程連結：<a href="{{tutor.teachingLink}}">{{tutor.teachingLink}}</a></p>
+            </div>
+            <div class="modal-footer">
+              <button id="close-button" type="button" class="custom-solid-button" data-bs-dismiss="modal">確認</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </form>
   </div>
 </div>

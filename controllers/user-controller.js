@@ -73,7 +73,9 @@ const userController = {
     const topLearnersPromise = Course.findAll({
       raw: true,
       nest: true,
-      where: { isDone: true },
+      where: {
+        isDone: true
+      },
       attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
       group: ['userId'],
       order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
@@ -81,7 +83,10 @@ const userController = {
       include: [
         {
           model: User,
-          attributes: ['name', 'avatar']
+          attributes: ['name', 'avatar'],
+          where: {
+            isAdmin: false
+          }
         }
       ]
     })
@@ -96,80 +101,103 @@ const userController = {
       })
       .catch(err => next(err))
   },
+  getTutor: async (req, res, next) => {
+    try {
+      const tutorId = req.params.id
+      const [tutor, courses] = await Promise.all([
+        Tutor.findByPk(tutorId, {
+          nest: true,
+          raw: true,
+          include: [
+            {
+              model: User,
+              attributes: ['name', 'avatar', 'nation']
+            }
+          ]
+        }),
+        Course.findAll({
+          raw: true,
+          nest: true,
+          where: { tutorId: tutorId },
+          order: [['time', 'DESC']]
+        })
+      ])
 
-  getTutor: (req, res, next) => {
-    const tutorId = req.params.id
+      if (!tutor) throw new Error('找不到該名老師')
 
-    return Promise.all([
-      Tutor.findByPk(tutorId, {
-        nest: true,
-        raw: true,
-        include: [
-          { model: User, attributes: ['name', 'avatar', 'nation'] }
-        ]
-      }),
-      Course.findAll({
-        raw: true,
-        nest: true,
-        where: { tutorId: tutorId },
-        order: [['time', 'DESC']]
-      })
-    ])
-      .then(([tutor, courses]) => {
-        if (!tutor) throw new Error('找不到該名老師')
+      // 已評價的課程
+      const ratedCourses = courses.filter(courseData => courseData.rating > 0)
 
-        // 已評價的課程
-        const ratedCourses = courses.filter(courseData => courseData.rating > 0)
+      // 未來兩週可預約的時間
+      let teachingTime = tutor.teachingTime ? JSON.parse(tutor.teachingTime) : null
+      if (!teachingTime) {
+        return res.render('tutor', {
+          tutor,
+          ratedCourses,
+          unbookedCourses: ['目前沒有可預約的課程']
+        })
+      }
+      if (!Array.isArray(teachingTime)) {
+        teachingTime = [teachingTime]
+      }
 
-        // 可預約的時間
-        let teachingTime = tutor.teachingTime ? JSON.parse(tutor.teachingTime) : null
-        if (!teachingTime) {
-          return res.render('tutor', { tutor, ratedCourses, unbookedCourses: ['目前沒有可預約的課程'] })
+      // 將可預約時間轉為數字並排序
+      teachingTime = teachingTime.map(day => Number(day)).sort((a, b) => a - b)
+
+      // 已被預約的課程
+      const bookedCourses = courses
+        .filter(courseData => courseData.time > Date.now())
+        .map(courseData => dayjs(courseData.time).format('YYYY-MM-DD HH:mm'))
+
+      // 開放預約的時間
+      const availableTimes = []
+      const duration = Number(tutor.duration)
+      const today = dayjs().day()
+      const availableBookDays = 14
+      for (let day = 0; day < availableBookDays; day++) {
+        const courseTime = {
+          start: 18,
+          end: 22
         }
-        if (!Array.isArray(teachingTime)) { teachingTime = [teachingTime] }
-
-        // 將可預約時間轉為數字並排序
-        teachingTime = teachingTime.map(day => Number(day)).sort((a, b) => a - b)
-
-        // 已被預約的課程
-        const bookedCourses = courses.filter(courseData => courseData.time > Date.now()).map(courseData => dayjs(courseData.time).format('YYYY-MM-DD HH:mm'))
-
-        // 開放預約的時間
-        const availableTimes = []
-        const duration = Number(tutor.duration)
-        const today = dayjs().day()
-        const availableBookDays = 14
-        for (let day = 0; day < availableBookDays; day++) {
-          const courseTime = {
-            start: 18,
-            end: 22
-          }
-          const weekday = (today + day) % 7
-          if (teachingTime.includes(weekday)) {
-            for (let i = courseTime.start; i < courseTime.end; i++) {
-              if (duration === 30) {
-                availableTimes.push(dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm'))
-                availableTimes.push(dayjs().add(day, 'day').hour(i).minute(30).format('YYYY-MM-DD HH:mm'))
-              }
-              if (duration === 60) {
-                availableTimes.push(dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm'))
-              }
+        const weekday = (today + day) % 7
+        if (teachingTime.includes(weekday)) {
+          for (let i = courseTime.start; i < courseTime.end; i++) {
+            if (duration === 30) {
+              availableTimes.push(
+                dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm'),
+                dayjs().add(day, 'day').hour(i).minute(30).format('YYYY-MM-DD HH:mm')
+              )
+            }
+            if (duration === 60) {
+              availableTimes.push(dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm'))
             }
           }
         }
+      }
 
-        // 去除被預約的課程，取得可預約的課程
-        const unbookedCourses = availableTimes.filter(availableTime => !bookedCourses.includes(availableTime))
+      // 去除被預約的課程，取得可預約的課程
+      const unbookedCourses = availableTimes.filter(availableTime => !bookedCourses.includes(availableTime))
 
-        // 老師的平均評價
-        let avgRating = 0
-        const ratings = courses.map(courseData => courseData.rating).filter(rating => rating > 0)
+      // 老師的平均評價
+      let avgRating = 0
+      const ratings = courses.map(courseData => courseData.rating).filter(rating => rating > 0)
+      if (ratings.length > 0) {
         const totalRating = ratings.reduce((a, b) => a + b, 0)
         avgRating = (totalRating / ratings.length).toFixed(1)
+      } else {
+        avgRating = null
+      }
 
-        return res.render('tutor', { tutor, ratedCourses, availableTimes, unbookedCourses, avgRating })
+      return res.render('tutor', {
+        tutor,
+        ratedCourses,
+        availableTimes,
+        unbookedCourses,
+        avgRating
       })
-      .catch(err => next(err))
+    } catch (err) {
+      next(err)
+    }
   },
   getProfile: async (req, res, next) => {
     const userId = req.user.id

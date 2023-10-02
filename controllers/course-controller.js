@@ -19,10 +19,11 @@ const courseController = {
     ])
       .then(([tutor, courses]) => {
         if (tutor.userId === userId) throw new Error('無法預約自己的課程')
-        if (courses) throw new Error('這個時段已經被預約')
+        if (courses) throw new Error('此時段已經被預約')
 
         return Course.create({
           time: bookTime,
+          duration,
           tutorId,
           userId
         })

@@ -1,6 +1,7 @@
 <div class="row mb-5">
+  {{!-- 左側老師列表 --}}
   <div class="col-md-9">
-    {{!-- 搜尋 --}}
+    {{!-- 搜尋框 --}}
     <div class="row" id="search-bar">
       <form action="/tutors/search" method="GET">
         <div class="input-group mb-3">
@@ -31,12 +32,6 @@
               <div class="tutor-list-info m-3">
                 {{!-- 名字 --}}
                 <h5>{{this.User.name}}</h5>
-                {{!-- 評分 --}}
-                {{#if avgRating}}
-                <strong class="class-rate badge bg-primary">{{avgRating}}</strong>
-                {{else}}
-                <span>目前沒有評價</span>
-                {{/if}}
                 {{!-- 國籍 --}}
                 <p>{{this.User.nation}}</p>
               </div>
@@ -54,7 +49,7 @@
     {{> pagination}}
   </div>
 
-  {{!-- 學習時數 --}}
+  {{!-- 右側學習時數排行 --}}
   <div class="col-md-3">
     <h5 class="topLeaners-list-title text-center">學習時數總排行</h5>
     <ul class="list-group">

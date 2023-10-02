@@ -1,5 +1,6 @@
 const { User, Tutor, Course } = require('../models')
 const dayjs = require('dayjs')
+const { localFileHandler } = require('../helpers/file-helpers')
 
 const tutorController = {
   getProfile: (req, res, next) => {
@@ -36,7 +37,7 @@ const tutorController = {
             }))
 
             const ratedCourses = courses.filter(courseItem => {
-              return courseItem.rating !== null;
+              return courseItem.rating !== null
             }).slice(-6)
 
             return res.render('tutor/profile', {
@@ -73,30 +74,60 @@ const tutorController = {
       })
       .catch(err => next(err))
   },
-  putProfile: (req, res, next) => {
-    const { tutorIntroduction, teachingStyle, duration, teachingLink } = req.body
+  putProfile: async (req, res, next) => {
+    const { name, nation, tutorIntroduction, teachingStyle, duration, teachingLink } = req.body
     const userId = req.user.id
     const teachingTimeString = req.body.teachingTime ? JSON.stringify(req.body.teachingTime) : null
+    const { file } = req
+    const requiredData = {
+      name: '名字',
+      nation: '國籍',
+      tutorIntroduction: '關於我',
+      teachingStyle: '教學風格',
+      teachingLink: '課程連結'
+    }
+    const missingData = []
 
-    if (userId !== Number(req.params.id)) throw new Error('無法查看他人資料')
+    try {
+      for (const data in requiredData) {
+        if (!req.body[data]) {
+          missingData.push(requiredData[data])
+        }
+      }
+      if (missingData.length > 0) {
+        throw new Error(`「${missingData.join('、 ')}」為必填`)
+      }
 
-    Tutor.findOne({ where: { userId } })
-      .then(tutor => {
-        if (!tutor) throw new Error('無該名老師')
+      const [tutor, filePath] = await Promise.all([
+        Tutor.findOne({
+          where: { userId },
+          attributes: { exclude: ['password'] },
+          include: [{
+            model: User,
+            attributes: ['name', 'nation', 'avatar']
+          }]
+        }),
+        localFileHandler(file)
+      ])
 
-        return tutor.update({
-          tutorIntroduction,
-          teachingStyle,
-          duration,
-          teachingTime: teachingTimeString,
-          teachingLink
-        })
+      if (!tutor) throw new Error('無該名老師')
+
+      await tutor.update({
+        name,
+        nation,
+        avatar: filePath || tutor.User.avatar,
+        tutorIntroduction,
+        teachingStyle,
+        duration,
+        teachingTime: teachingTimeString,
+        teachingLink
       })
-      .then(() => {
-        req.flash('success_messages', '成功更新課程資訊')
-        return res.redirect(`/tutor/${req.params.id}`)
-      })
-      .catch(err => next(err))
+
+      req.flash('success_messages', '成功更新課程資訊')
+      return res.redirect(`/tutor/${req.params.id}`)
+    } catch (err) {
+      next(err)
+    }
   }
 }
 
