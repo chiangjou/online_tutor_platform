@@ -48,6 +48,18 @@ i {
   color: white;
 }
 
+.custom-solid-button a {
+  text-decoration: none;
+  font-size: 700;
+  color: white;
+}
+
+.custom-button:hover a {
+  text-decoration: none;
+  font-size: 700;
+  color: white;
+}
+
 .avatar,
 .default-avatar {
   width: 200px;
