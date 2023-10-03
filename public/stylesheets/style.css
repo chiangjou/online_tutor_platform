@@ -67,17 +67,6 @@ i {
   border-radius: 50%;
 }
 
-/* #back-btn {
-  text-decoration: none;
-  color: #0e4d4a;
-}
-
-#back-btn:hover {
-  text-decoration: none;
-  color: white
-} */
-
-
 .form-avatar,
 .form-default-avatar {
   width: 50px;
@@ -177,4 +166,10 @@ td {
   text-align: center;
   vertical-align: middle;
   padding: 10px;
+}
+
+.nav-item a {
+  text-decoration: none;
+  padding: 5px 10px;
+  display: flex;
 }
