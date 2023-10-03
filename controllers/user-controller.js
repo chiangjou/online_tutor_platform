@@ -3,7 +3,6 @@ const { User, Tutor, Course, sequelize } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
 const dayjs = require('dayjs')
-const { Op } = require('sequelize')
 
 const userController = {
   signUpPage: (req, res) => {
