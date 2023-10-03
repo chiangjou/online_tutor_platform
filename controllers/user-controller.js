@@ -152,7 +152,7 @@ const userController = {
       if (!tutor) throw new Error('找不到該名老師')
 
       // 已評價的課程
-      const ratedCourses = courses.filter(courseData => courseData.rating > 0)
+      const ratedCourses = courses.filter(courseData => courseData.rating > 0).slice(-5)
 
       // 未來兩週可預約的時間
       let teachingTime = tutor.teachingTime ? JSON.parse(tutor.teachingTime) : null

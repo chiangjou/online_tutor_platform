@@ -18,6 +18,7 @@
         <p>{{tutor.User.nation}}</p>
         {{!-- 評分 --}}
         <div>
+          <i class="fa-solid fa-star" style="color: #e4b02b;"></i>
           {{#if avgRating}}
           <strong class="course-rating badge">{{avgRating}}</strong>
           {{else}}
@@ -28,28 +29,35 @@
     </div>
 
     {{!-- 自我介紹 --}}
-    <h5>關於我</h5>
-    <p style="white-space: break-spaces;">{{tutor.tutorIntroduction}}</p>
+    <div class="mb-4">
+      <h5>關於我</h5>
+      <p class="mt-3" style="white-space: break-spaces;">{{tutor.tutorIntroduction}}</p>
+    </div>
     <hr>
     {{!-- 教學風格 --}}
-    <h5>教學風格</h5>
-    <p style="white-space: break-spaces;">{{tutor.teachingStyle}}</p>
+    <div class="mb-4">
+      <h5>教學風格</h5>
+      <p class="mt-3" style="white-space: break-spaces;">{{tutor.teachingStyle}}</p>
+    </div>
     <hr>
     {{!-- 學生評語 --}}
-    <h5>學生評語</h5>
-    {{#if ratedCourses}}
-    <div>
-      {{#each ratedCourses}}
-      <div class="class-info m-2">
-        <strong class="course-rating badge">{{this.rating}}</strong>
-        ：
-        <span class="course-comment">{{#if this.comment}}{{this.comment}}{{else}}沒有留下評論{{/if}}</span>
+    <div class="mb-4">
+      <h5>學生評語</h5>
+      {{#if ratedCourses}}
+      <div class="mt-3">
+        {{#each ratedCourses}}
+        <div class="class-info m-2">
+          <i class="fa-solid fa-star" style="color: #e4b02b;"></i>
+          <strong class="course-rating badge" style="width: 30px">{{this.rating}}</strong>
+          ：
+          <span class="course-comment">{{#if this.comment}}{{this.comment}}{{else}}沒有留下評論{{/if}}</span>
+        </div>
+        {{/each}}
       </div>
-      {{/each}}
+      {{else}}
+      <p>目前沒有評價</p>
+      {{/if}}
     </div>
-    {{else}}
-    <p>目前沒有評價</p>
-    {{/if}}
   </div>
 
   {{!-- 右側預約課程 --}}
@@ -62,7 +70,7 @@
         <option value="{{this}}">{{this}}</option>
         {{/each}}
       </select>
-      
+
       <!-- Button trigger modal -->
       <div class="d-flex justify-content-end">
         <button type="button" class="custom-solid-button" style="font-size: 15px; padding: 8px 12px"

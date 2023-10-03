@@ -29,6 +29,15 @@ const tutorController = {
           ]
         })
           .then(courses => {
+            // 平均評價分數
+            let avgRating = 0;
+            const ratings = courses.map((courseItem) => courseItem.rating).filter((rating) => rating !== null);
+            if (ratings.length > 0) {
+              const totalRating = ratings.reduce((a, b) => a + b, 0);
+              avgRating = (totalRating / ratings.length).toFixed(1);
+            }
+
+            // 未來課程
             const futureCourses = courses.filter(courseItem => {
               return new Date(courseItem.time) >= new Date()
             }).map(courseItem => ({
@@ -36,14 +45,16 @@ const tutorController = {
               time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
             }))
 
+            // 被評價過的課程
             const ratedCourses = courses.filter(courseItem => {
               return courseItem.rating !== null
-            }).slice(-6)
+            }).slice(-5)
 
             return res.render('tutor/profile', {
               user,
               futureCourses,
-              ratedCourses
+              ratedCourses,
+              avgRating
             })
           })
           .catch(err => next(err))
