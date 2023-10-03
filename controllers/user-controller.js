@@ -2,8 +2,6 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor, Course, sequelize } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
-const Sequelize = require('sequelize')
-const { Op } = Sequelize
 const dayjs = require('dayjs')
 
 const userController = {
@@ -206,32 +204,29 @@ const userController = {
     }
 
     try {
-      const [user, courses] = await Promise.all([
-        User.findByPk(userId, {
-          attributes: { exclude: ['password'] },
-          raw: true
-        }),
-        Course.findAll({
-          raw: true,
-          nest: true,
-          where: { userId },
-          order: [['time', 'ASC']],
-          include: [{
-            model: Tutor,
-            attributes: ['id', 'userId', 'teachingLink'],
-            include: [{
-              model: User,
-              attributes: ['name', 'avatar']
-            }]
-          }]
-        })
-      ])
-
+      const user = await User.findByPk(userId, {
+        attributes: { exclude: ['password'] },
+        raw: true
+      });
       if (!user) {
-        return res.status(404).send('無該名使用者')
+        return res.status(404).send('無該名使用者');
       }
 
-      // 格式化日期
+      const courses = await Course.findAll({
+        raw: true,
+        nest: true,
+        where: { userId },
+        order: [['time', 'ASC']],
+        include: [{
+          model: Tutor,
+          attributes: ['id', 'userId', 'teachingLink'],
+          include: [{
+            model: User,
+            attributes: ['name', 'avatar']
+          }]
+        }]
+      });
+
       function formatCourseTime(courses) {
         return courses.map(courseItem => ({
           ...courseItem,
