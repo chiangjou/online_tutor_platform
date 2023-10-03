@@ -2,6 +2,7 @@
 const faker = require('faker')
 const { DateTime } = require('luxon')
 
+// 生成過去時間
 function getRandomPastTime () {
   // 過去一年的隨機時間
   const now = DateTime.now()
@@ -21,6 +22,7 @@ function getRandomPastTime () {
   return formattedPastTime
 }
 
+// 生成未來時間
 function getRandomFutureTime () {
   // 未來兩週的隨機時間
   const futureDate = faker.date.between(
@@ -59,6 +61,24 @@ module.exports = {
               time: getRandomPastTime(),
               duration: tutors[0][randomTutorIndex].duration,
               is_done: 1,
+              user_id: user.id,
+              tutor_id: tutors[0][randomTutorIndex].id,
+              created_at: new Date(),
+              updated_at: new Date()
+            })
+          })
+      })
+
+      // 每個學生有兩堂未上過的課
+      users[0].forEach((user, i) => {
+        Array.from({ length: 2 })
+          .map((_, j) => {
+            const randomTutorIndex = Math.floor(Math.random() * tutors[0].length)
+
+            return courses.push({
+              time: getRandomFutureTime(),
+              duration: tutors[0][randomTutorIndex].duration,
+              is_done: 0,
               user_id: user.id,
               tutor_id: tutors[0][randomTutorIndex].id,
               created_at: new Date(),

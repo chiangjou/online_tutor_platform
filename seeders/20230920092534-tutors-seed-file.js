@@ -8,7 +8,7 @@ module.exports = {
       const shuffledUsers = users[0].sort(() => 0.5 - Math.random())
 
       await queryInterface.bulkInsert('Tutors',
-        Array.from({ length: 15 }).map((d, i) => {
+        Array.from({ length: 30 }).map((d, i) => {
           queryInterface.sequelize.query(`UPDATE Users SET is_tutor = true WHERE id = ${shuffledUsers[i].id}`)
 
           const maxTextLength = 160

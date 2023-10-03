@@ -29,7 +29,7 @@ module.exports = {
           updated_at: new Date()
         }]
 
-      const generateUsers = 50
+      const generateUsers = 60
       const maxNameLength = 10
 
       for (let i = 0; i < generateUsers; i++) {
