@@ -69,6 +69,27 @@ module.exports = {
           })
       })
 
+      // 每個學生都上過兩堂課，且已經評分與留言
+      users[0].forEach((user, i) => {
+        Array.from({ length: 2 })
+          .map((_, j) => {
+            const randomTutorIndex = Math.floor(Math.random() * tutors[0].length)
+            const maxCommentLength = 100
+
+            return courses.push({
+              time: getRandomPastTime(),
+              duration: tutors[0][randomTutorIndex].duration,
+              is_done: 1,
+              rating: Math.floor(Math.random() * 5) + 1,
+              comment: faker.lorem.text().substring(0, maxCommentLength),
+              user_id: user.id,
+              tutor_id: tutors[0][randomTutorIndex].id,
+              created_at: new Date(),
+              updated_at: new Date()
+            })
+          })
+      })
+
       // 每個學生有兩堂未上過的課
       users[0].forEach((user, i) => {
         Array.from({ length: 2 })
