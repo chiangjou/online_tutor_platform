@@ -5,21 +5,21 @@ const { DateTime } = require('luxon')
 // 生成過去時間
 function getRandomPastTime () {
   // 過去一年的隨機時間
-  const now = DateTime.now().setZone('Asia/Taipei');
-  const pastDate = faker.date.between(now.minus({ years: 1 }).toJSDate(), now.toJSDate());
+  const now = DateTime.now().setZone('Asia/Taipei')
+  const pastDate = faker.date.between(now.minus({ years: 1 }).toJSDate(), now.toJSDate())
 
   // 18:00 到 22:00 之間每小時的 30 分或每整點
   const randomHours = Math.floor(Math.random() * 4) + 18
   const randomMinutes = Math.random() < 0.5 ? 0 : 30
 
   // 轉換台北時區
-  const taipeiTime = DateTime.fromJSDate(pastDate, { zone: 'Asia/Taipei' });
-  const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 });
+  const taipeiTime = DateTime.fromJSDate(pastDate, { zone: 'Asia/Taipei' })
+  const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 })
 
   // 格式化時間
-  const formattedPastTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss');
+  const formattedPastTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
 
-  return formattedPastTime;
+  return formattedPastTime
 }
 
 // 生成未來時間
@@ -28,20 +28,20 @@ function getRandomFutureTime () {
   const futureDate = faker.date.between(
     DateTime.now().setZone('Asia/Taipei').toJSDate(),
     DateTime.now().setZone('Asia/Taipei').plus({ days: 14 }).toJSDate()
-  );
+  )
 
   // 18:00 到 22:00 之間每小時的 30 分或每整點
   const randomHours = Math.floor(Math.random() * 4) + 18
   const randomMinutes = Math.random() < 0.5 ? 0 : 30
 
   // 轉換台北時區
-  const taipeiTime = DateTime.fromJSDate(futureDate, { zone: 'Asia/Taipei' });
-  const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 });
+  const taipeiTime = DateTime.fromJSDate(futureDate, { zone: 'Asia/Taipei' })
+  const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 })
 
   // 格式化時間
-  const formattedFutureTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss');
+  const formattedFutureTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
 
-  return formattedFutureTime;
+  return formattedFutureTime
 }
 
 module.exports = {

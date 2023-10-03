@@ -2,7 +2,7 @@
   {{!-- 左側老師列表 --}}
   <div class="col-md-9">
     {{!-- 搜尋框 --}}
-    <div class="row" id="search-bar">
+    <div class="row" id="search-bar" style="margin-right: 10px;">
       <form action="/tutors/search" method="GET">
         <div class="input-group mb-3">
           <input type="text" name="keyword" class="form-control" id="search-bar" placeholder="搜尋老師名字、國家、介紹、教學風格"
@@ -15,7 +15,7 @@
     </div>
 
     {{!-- 老師列表 --}}
-    <div class="row mt-3">
+    <div class="row my-5" style="margin-right: 10px;">
       {{#each tutors}}
       <div class="col-md-4 col-12 d-flex flex-column">
         <div class="card mb-4 shadow-sm h-100 tutor-list">
@@ -52,21 +52,31 @@
   {{!-- 右側學習時數排行 --}}
   <div class="col-md-3">
     <h5 class="topLeaners-list-title text-center">學習時數總排行</h5>
-    <ul class="list-group">
-      {{#each topLearners}}
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="topLearners-list-avatar">
-          {{#if this.User.avatar}}
-          <img class="avatar" src="{{this.User.avatar}}" alt="avatar" title="avatar">
-          {{else}}
-          <img class="default-avatar" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
-          {{/if}}
-        </div>
-        <span>{{this.User.name}}</span>
-        <span class="badge rounded-pill">{{this.totalDuration}} 分鐘</span>
-      </li>
-      {{/each}}
-    </ul>
+    <table class="table">
+      <tbody>
+        {{#each topLearners}}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              <i class="fa-solid fa-trophy m-1" style="color: #e4b02b;"></i>
+              <span class="m-1"><strong>{{this.ranking}}</strong></span>
+            </div>
+          </td>
+          <td>
+            <div class="topLearners-list-avatar">
+              {{#if this.User.avatar}}
+              <img class="avatar" src="{{this.User.avatar}}" alt="avatar" title="avatar">
+              {{else}}
+              <img class="default-avatar" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
+              {{/if}}
+            </div>
+          </td>
+          <td>{{this.User.name}}</td>
+          <td><span class="badge">{{this.totalDurationHours}} 小時</span></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </div>
 
 </div>

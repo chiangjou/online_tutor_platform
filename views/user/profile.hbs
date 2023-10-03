@@ -22,7 +22,6 @@
 
   {{!-- 右側 --}}
   <div class="col-md-8">
-
     <h4>即將到來</h4>
     <div class="row mb-5">
       {{#each futureCourses}}
@@ -58,9 +57,10 @@
       </div>
       {{/each}}
     </div>
+    <hr>
 
     <h4>歷史課程</h4>
-    <div class="row">
+    <div class="row mb-5">
       {{#each pastCourses}}
       <div class="col-md-6 col-12" style="height: 100px; margin: 10px 0px">
         <div class="card mb-4 shadow-sm h-100" id="course-card">
@@ -103,6 +103,18 @@
         </div>
       </div>
       {{/each}}
+    </div>
+    <hr>
+
+    <h4>我的學習時數</h4>
+    <div class="mt-4 d-flex" style="font-size: 18px;">
+      <div>
+        <i class="fa-solid fa-clock mx-1"></i>
+        目前累積 <strong>{{totalDuration}}</strong> 小時</div>
+      <div class="mx-5">
+        <i class="fa-solid fa-trophy mx-1" style="color: #e4b02b;"></i>
+        第 <strong>{{studentRanking}}</strong> 名
+      </div>
     </div>
   </div>
 </div>

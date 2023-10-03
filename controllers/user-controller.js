@@ -3,6 +3,7 @@ const { User, Tutor, Course, sequelize } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
 const dayjs = require('dayjs')
+const { Op } = require('sequelize')
 
 const userController = {
   signUpPage: (req, res) => {
@@ -88,6 +89,34 @@ const userController = {
         }
       ]
     })
+      .then(topLearners => {
+        const learingHours = topLearners.map(learner => ({
+          ...learner,
+          // 將分鐘轉換成小時為單位
+          totalDurationHours: (learner.totalDuration / 60).toFixed(1)
+        }))
+
+        // 按學習時長降冪排序
+        learingHours.sort((a, b) => b.totalDuration - a.totalDuration)
+
+        // 初始化排名
+        let currentRanking = 1
+        learingHours[0].ranking = currentRanking
+
+        // 處理同時數同名
+        for (let i = 1; i < learingHours.length; i++) {
+          if (learingHours[i].totalDuration === learingHours[i - 1].totalDuration) {
+            // 如果學習時數相同為同一名次
+            learingHours[i].ranking = currentRanking
+          } else {
+            // 否則增加排名
+            currentRanking++
+            learingHours[i].ranking = currentRanking
+          }
+        }
+
+        return learingHours
+      })
 
     Promise.all([tutorsPromise, topLearnersPromise])
       .then(([tutors, topLearners]) => {
@@ -207,9 +236,9 @@ const userController = {
       const user = await User.findByPk(userId, {
         attributes: { exclude: ['password'] },
         raw: true
-      });
+      })
       if (!user) {
-        return res.status(404).send('無該名使用者');
+        return res.status(404).send('無該名使用者')
       }
 
       const courses = await Course.findAll({
@@ -225,21 +254,46 @@ const userController = {
             attributes: ['name', 'avatar']
           }]
         }]
-      });
+      })
 
-      function formatCourseTime(courses) {
+      // 格式化時間
+      function formatCourseTime (courses) {
         return courses.map(courseItem => ({
           ...courseItem,
           time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
         }))
       }
+      // 過去課程
       const pastCourses = formatCourseTime(courses.filter(courseItem => new Date(courseItem.time) < new Date())).reverse()
+      // 未來課程
       const futureCourses = formatCourseTime(courses.filter(courseItem => new Date(courseItem.time) >= new Date()))
+
+      // 計算學習時數及排名
+      const ranking = await Course.findAll({
+        raw: true,
+        nest: true,
+        where: { isDone: true },
+        attributes: [
+          'userId',
+          [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']
+        ],
+        group: ['userId'],
+        order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']]
+      })
+
+      const studentRanking = ranking.findIndex(
+        student => student.userId === userId
+      )
+
+      const totalDurationMinutes = ranking.find(student => student.userId === userId)?.totalDuration || 0
+      const totalDurationHours = (totalDurationMinutes / 60).toFixed(1)
 
       return res.render('user/profile', {
         user,
         pastCourses,
-        futureCourses
+        futureCourses,
+        studentRanking: studentRanking + 1,
+        totalDuration: totalDurationHours
       })
     } catch (err) {
       next(err)
@@ -374,11 +428,11 @@ const userController = {
   },
   searchTutors: async (req, res, next) => {
     try {
-      const keyword = req.query.keyword.trim();
-      const DEFAULT_LIMIT = 6;
-      const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || DEFAULT_LIMIT;
-      const offset = getOffset(limit, page);
+      const keyword = req.query.keyword.trim()
+      const DEFAULT_LIMIT = 6
+      const page = Number(req.query.page) || 1
+      const limit = Number(req.query.limit) || DEFAULT_LIMIT
+      const offset = getOffset(limit, page)
 
       // 學習時數前十名的學生
       const topLearners = await Course.findAll({
@@ -398,7 +452,7 @@ const userController = {
             }
           }
         ]
-      });
+      })
 
       // 搜尋老師
       const tutors = await Tutor.findAll({
@@ -414,37 +468,36 @@ const userController = {
         offset
       })
 
-        const tutorsLowerCase = tutors.map(tutor => {
-          return{
-            ...tutor,
-            name: tutor.User.name.toLowerCase(),
-            nation: tutor.User.nation.toLowerCase(),
-            tutorIntroduction: tutor.tutorIntroduction.toLowerCase(),
-            teachingStyle: tutor.teachingStyle.toLowerCase()
-          }
-        })
-
-        const searchedTutors = tutorsLowerCase.filter(tutor => {
-          return (
-            tutor.name.includes(keyword) || tutor.nation.includes(keyword) || tutor.tutorIntroduction.includes(keyword) || tutor.teachingStyle.includes(keyword)
-          )
-        })
-
-        if (searchedTutors.length === 0) {
-          throw new Error(`沒有符合關鍵字「${keyword}」的老師`);
+      const tutorsLowerCase = tutors.map(tutor => {
+        return {
+          ...tutor,
+          name: tutor.User.name.toLowerCase(),
+          nation: tutor.User.nation.toLowerCase(),
+          tutorIntroduction: tutor.tutorIntroduction.toLowerCase(),
+          teachingStyle: tutor.teachingStyle.toLowerCase()
         }
+      })
 
-        return res.render('tutors', {
-          tutors: searchedTutors,
-          keyword,
-          topLearners,
-          pagination: getPagination(limit, page, searchedTutors.length)
-        })
+      const searchedTutors = tutorsLowerCase.filter(tutor => {
+        return (
+          tutor.name.includes(keyword) || tutor.nation.includes(keyword) || tutor.tutorIntroduction.includes(keyword) || tutor.teachingStyle.includes(keyword)
+        )
+      })
+
+      if (searchedTutors.length === 0) {
+        throw new Error(`沒有符合關鍵字「${keyword}」的老師`)
+      }
+
+      return res.render('tutors', {
+        tutors: searchedTutors,
+        keyword,
+        topLearners,
+        pagination: getPagination(limit, page, searchedTutors.length)
+      })
     } catch (err) {
-      return next(err);
+      return next(err)
     }
   }
 }
 
 module.exports = userController
-
