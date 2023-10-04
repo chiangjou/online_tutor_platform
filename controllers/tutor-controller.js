@@ -123,13 +123,13 @@ const tutorController = {
       })
 
       const tutor = await Tutor.findOne({
-          where: { userId },
-          attributes: { exclude: ['password'] },
-          include: [{
-            model: User,
-            attributes: ['name', 'nation', 'avatar']
-          }]
-        })
+        where: { userId },
+        attributes: { exclude: ['password'] },
+        include: [{
+          model: User,
+          attributes: ['name', 'nation', 'avatar']
+        }]
+      })
 
       if (!tutor) throw new Error('無該名老師')
 

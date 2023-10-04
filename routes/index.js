@@ -37,7 +37,6 @@ router.get('/tutor/:id', authenticated, tutorController.getProfile)
 router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
 router.put('/tutor/:id', authenticated, upload.single('avatar'), tutorController.putProfile)
 
-
 router.post('/tutors/:id/booking', authenticated, courseController.bookCourse)
 router.post('/courses/:id/rating', authenticated, courseController.rateCourse)
 
