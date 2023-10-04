@@ -27,15 +27,16 @@ router.get('/tutors/:id', authenticated, userController.getTutor)
 router.get('/tutors', authenticated, userController.getTutors)
 
 router.get('/users/:id', authenticated, userController.getProfile)
-router.get('/users/:id/edit', userController.editProfile)
-router.put('/users/:id', upload.single('avatar'), userController.putProfile)
+router.get('/users/:id/edit', authenticated, userController.editProfile)
+router.put('/users/:id', authenticated, upload.single('avatar'), userController.putProfile)
 
 router.get('/users/:id/apply', authenticated, userController.getApply)
 router.post('/users/:id/apply', upload.single('avatar'), authenticated, userController.postApply)
 
-router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
-router.put('/tutor/:id', authenticated, tutorController.putProfile)
 router.get('/tutor/:id', authenticated, tutorController.getProfile)
+router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
+router.put('/tutor/:id', authenticated, upload.single('avatar'), tutorController.putProfile)
+
 
 router.post('/tutors/:id/booking', authenticated, courseController.bookCourse)
 router.post('/courses/:id/rating', authenticated, courseController.rateCourse)

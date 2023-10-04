@@ -1,7 +1,7 @@
 <div class="mb-4 text-center">
   <h1 class="h3 font-weight-normal mb-3">修改課程資訊與時間</h1>
 </div>
-<form action="/tutor/{{user.id}}" method="POST" style="width: 100%;">
+<form action="/tutor/{{user.id}}?_method=PUT" method="POST" enctype="multipart/form-data" style="width: 100%;">
   <input type="hidden" name="_method" value="PUT">
 
   {{!-- 名字 --}}

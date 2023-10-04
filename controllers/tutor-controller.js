@@ -108,24 +108,33 @@ const tutorController = {
         throw new Error(`「${missingData.join('、 ')}」為必填`)
       }
 
-      const [tutor, filePath] = await Promise.all([
-        Tutor.findOne({
+      const [user, filePath] = await Promise.all([
+        User.findByPk(req.params.id, { attributes: { exclude: ['password'] } }),
+        localFileHandler(file)
+      ])
+
+      if (!user) throw new Error('無該名使用者')
+
+      // 更新 User 資料
+      await user.update({
+        name,
+        nation,
+        avatar: filePath || user.avatar
+      })
+
+      const tutor = await Tutor.findOne({
           where: { userId },
           attributes: { exclude: ['password'] },
           include: [{
             model: User,
             attributes: ['name', 'nation', 'avatar']
           }]
-        }),
-        localFileHandler(file)
-      ])
+        })
 
       if (!tutor) throw new Error('無該名老師')
 
+      // 更新 Tutor 資料
       await tutor.update({
-        name,
-        nation,
-        avatar: filePath || tutor.User.avatar,
         tutorIntroduction,
         teachingStyle,
         duration,
