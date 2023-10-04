@@ -1,123 +1,126 @@
 <div class="mb-4 text-center">
-  <h1 class="h3 font-weight-normal mb-3">修改課程資訊與時間</h1>
+  <h3 class="font-weight-normal">修改課程資訊與時間</h3>
 </div>
-<form action="/tutor/{{user.id}}?_method=PUT" method="POST" enctype="multipart/form-data" style="width: 100%;">
-  <input type="hidden" name="_method" value="PUT">
 
-  {{!-- 名字 --}}
-  <div class=" form-row mb-4">
-    <i class="fa-solid fa-user"></i>
-    <label class="form-label" for="name"><strong>名字</strong></label>
-    <input class="form-control" type="text" name="name" id="name" placeholder="輸入名字" value="{{user.name}}">
-  </div>
+<div class="card my-4 d-flex align-items-center">
+  <form action="/tutor/{{user.id}}?_method=PUT" method="POST" enctype="multipart/form-data" class="form-edit-profile my-4" style="width: 90%;">
+    <input type="hidden" name="_method" value="PUT">
 
-  {{!-- 頭像 --}}
-  <div class="form-row mb-4">
-    <i class="fa-solid fa-image"></i>
-    <label class="form-label" for="avatar"><strong>更新頭像</strong></label>
-    {{#if user.avatar}}
-    <img class="form-avatar m-2" src="{{user.avatar}}" alt="avatar" title="avatar">
-    {{else}}
-    <img class="form-default-avatar m-2" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
-    {{/if}}
-    <input class="form-control" type="file" class="form-control-file" id="avatar" name="avatar">
-  </div>
-
-  {{!-- 國家 --}}
-  <div class="form-row mb-4">
-    <i class="fa-solid fa-flag-checkered"></i>
-    <label class="form-label" for="nation"><strong>國家</strong></label>
-    <select class="form-control" id="nation" name="nation" onchange="updateNationValue(this)">
-      <option value="{{user.nation}}">{{user.nation}}</option>
-      {{#each countries}}
-      <option value="{{this}}" {{#if (eq this user.nation)}}selected{{/if}}>{{this}}</option>
-      {{/each}}
-    </select>
-  </div>
-  <input type="hidden" id="hiddenNation" name="hiddenNation" value="{{user.nation}}">
-
-  {{!-- 自我介紹 --}}
-  <div class="form-row mb-4">
-    <i class="fa-solid fa-child-reaching"></i>
-    <label class="form-label" for="tutorIntroduction">關於我</label>
-    <textarea class="form-control" id="tutorIntroduction" name="tutorIntroduction" rows="3"
-      required>{{tutor.tutorIntroduction}}</textarea>
-  </div>
-
-  {{!-- 教學風格 --}}
-  <div class="form-row mb-4">
-    <i class="fa-solid fa-feather"></i>
-    <label class="form-label" for="teachingStyle">教學風格</label>
-    <textarea class="form-control" id="teachingStyle" name="teachingStyle" rows="3">{{tutor.teachingStyle}}</textarea>
-  </div>
-
-  {{!-- 課程時間 --}}
-  <div class="form-row mb-4">
-    <i class="fa-solid fa-clock"></i>
-    <label class="form-label" for="duration">單堂課程時間</label>
-    <select class="form-select" id="duration" name="duration" required>
-      <option value="30" {{#ifCond tutor.duration "30" }}selected{{/ifCond}}>30分鐘</option>
-      <option value="60" {{#ifCond tutor.duration "60" }}selected{{/ifCond}}>60分鐘</option>
-    </select>
-  </div>
-
-  {{!-- 可預約時間 --}}
-  <div class="form-row mb-4">
-    <i class="fa-solid fa-calendar-days"></i>
-    <label class="form-label" for="teachingTime">開放預約時間：</label>
-    <div class="d-inline-flex">
-      {{#if weekdays}}
-      {{#each weekdays}}
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday{{this.value}}" name="teachingTime"
-          value="{{this.value}}" {{#if this.checked}}checked{{/if}}>
-        <label class="form-check-label" for="weekday{{this.value}}">{{this.label}}</label>
-      </div>
-      {{/each}}
-      {{else}}
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday1" name="teachingTime" value="1">
-        <label class="form-check-label" for="weekday1">星期一</label>
-      </div>
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday2" name="teachingTime" value="2">
-        <label class="form-check-label" for="weekday2">星期二</label>
-      </div>
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday3" name="teachingTime" value="3">
-        <label class="form-check-label" for="weekday3">星期三</label>
-      </div>
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday4" name="teachingTime" value="4">
-        <label class="form-check-label" for="weekday4">星期四</label>
-      </div>
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday5" name="teachingTime" value="5">
-        <label class="form-check-label" for="weekday5">星期五</label>
-      </div>
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday6" name="teachingTime" value="6">
-        <label class="form-check-label" for="weekday6">星期六</label>
-      </div>
-      <div class="form-check ms-3">
-        <input class="form-check-input" type="checkbox" id="weekday7" name="teachingTime" value="7">
-        <label class="form-check-label" for="weekday7">星期日</label>
-      </div>
-      {{/if}}
+    {{!-- 名字 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-user"></i>
+      <label class="form-label" for="name"><strong>名字</strong></label>
+      <input class="form-control" type="text" name="name" id="name" placeholder="輸入名字" value="{{user.name}}">
     </div>
-  </div>
 
-  {{!-- 課程連結 --}}
-  <div class="form-row mb-4">
-    <i class="fa-solid fa-link"></i>
-    <label class="form-label" for="classLink">課程視訊連結</label>
-    <input type="text" id="teachingLink" name="teachingLink" class="form-control" value="{{tutor.teachingLink}}">
-  </div>
+    {{!-- 頭像 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-image"></i>
+      <label class="form-label" for="avatar"><strong>更新頭像</strong></label>
+      {{#if user.avatar}}
+      <img class="form-avatar m-2" src="{{user.avatar}}" alt="avatar" title="avatar">
+      {{else}}
+      <img class="form-default-avatar m-2" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
+      {{/if}}
+      <input class="form-control" type="file" class="form-control-file" id="avatar" name="avatar">
+    </div>
 
-  <div class="text-center my-5">
-    <button class="custom-solid-button mx-2" onclick="submitForm()">儲存</button>
-    <button class="custom-button mx-2"><a id="back-btn" href="javascript:history.back()">返回</a></button>
-  </div>
-</form>
+    {{!-- 國家 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-flag-checkered"></i>
+      <label class="form-label" for="nation"><strong>國家</strong></label>
+      <select class="form-control" id="nation" name="nation" onchange="updateNationValue(this)">
+        <option value="{{user.nation}}">{{user.nation}}</option>
+        {{#each countries}}
+        <option value="{{this}}" {{#if (eq this user.nation)}}selected{{/if}}>{{this}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <input type="hidden" id="hiddenNation" name="hiddenNation" value="{{user.nation}}">
+
+    {{!-- 自我介紹 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-child-reaching"></i>
+      <label class="form-label" for="tutorIntroduction">關於我</label>
+      <textarea class="form-control" id="tutorIntroduction" name="tutorIntroduction" rows="3"
+        required>{{tutor.tutorIntroduction}}</textarea>
+    </div>
+
+    {{!-- 教學風格 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-feather"></i>
+      <label class="form-label" for="teachingStyle">教學風格</label>
+      <textarea class="form-control" id="teachingStyle" name="teachingStyle" rows="3">{{tutor.teachingStyle}}</textarea>
+    </div>
+
+    {{!-- 課程時間 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-clock"></i>
+      <label class="form-label" for="duration">單堂課程時間</label>
+      <select class="form-select" id="duration" name="duration" required>
+        <option value="30" {{#ifCond tutor.duration "30" }}selected{{/ifCond}}>30分鐘</option>
+        <option value="60" {{#ifCond tutor.duration "60" }}selected{{/ifCond}}>60分鐘</option>
+      </select>
+    </div>
+
+    {{!-- 可預約時間 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-calendar-days"></i>
+      <label class="form-label" for="teachingTime">開放預約時間：</label>
+      <div class="d-inline-flex">
+        {{#if weekdays}}
+        {{#each weekdays}}
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday{{this.value}}" name="teachingTime"
+            value="{{this.value}}" {{#if this.checked}}checked{{/if}}>
+          <label class="form-check-label" for="weekday{{this.value}}">{{this.label}}</label>
+        </div>
+        {{/each}}
+        {{else}}
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday1" name="teachingTime" value="1">
+          <label class="form-check-label" for="weekday1">星期一</label>
+        </div>
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday2" name="teachingTime" value="2">
+          <label class="form-check-label" for="weekday2">星期二</label>
+        </div>
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday3" name="teachingTime" value="3">
+          <label class="form-check-label" for="weekday3">星期三</label>
+        </div>
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday4" name="teachingTime" value="4">
+          <label class="form-check-label" for="weekday4">星期四</label>
+        </div>
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday5" name="teachingTime" value="5">
+          <label class="form-check-label" for="weekday5">星期五</label>
+        </div>
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday6" name="teachingTime" value="6">
+          <label class="form-check-label" for="weekday6">星期六</label>
+        </div>
+        <div class="form-check ms-3">
+          <input class="form-check-input" type="checkbox" id="weekday7" name="teachingTime" value="7">
+          <label class="form-check-label" for="weekday7">星期日</label>
+        </div>
+        {{/if}}
+      </div>
+    </div>
+
+    {{!-- 課程連結 --}}
+    <div class="form-row mb-4">
+      <i class="fa-solid fa-link"></i>
+      <label class="form-label" for="classLink">課程視訊連結</label>
+      <input type="text" id="teachingLink" name="teachingLink" class="form-control" value="{{tutor.teachingLink}}">
+    </div>
+
+    <div class="text-center my-5">
+      <button class="custom-solid-button mx-2" onclick="submitForm()">儲存</button>
+      <button class="custom-button mx-2"><a id="back-btn" href="javascript:history.back()">返回</a></button>
+    </div>
+  </form>
+</div>
 
 <script src="/javascripts/country.js"></script>
