@@ -113,7 +113,11 @@
         目前累積 <strong>{{totalDuration}}</strong> 小時</div>
       <div class="mx-5">
         <i class="fa-solid fa-trophy mx-1" style="color: #e4b02b;"></i>
+        {{#if studentRanking}}
         第 <strong>{{studentRanking}}</strong> 名
+        {{else}}
+        <strong>尚未有名次，趕快預約課程吧！</strong>
+        {{/if}}
       </div>
     </div>
   </div>

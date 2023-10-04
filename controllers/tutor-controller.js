@@ -3,63 +3,62 @@ const dayjs = require('dayjs')
 const { localFileHandler } = require('../helpers/file-helpers')
 
 const tutorController = {
-  getProfile: (req, res, next) => {
-    const userId = req.user.id
-    if (userId !== Number(req.params.id)) {
-      return res.status(403).send('無法查看其他使用者頁面')
-    }
+  getProfile: async (req, res, next) => {
+    try {
+      const userId = req.user.id
+      if (userId !== Number(req.params.id)) {
+        return res.status(403).send('無法查看其他使用者頁面')
+      }
 
-    User.findByPk(userId, {
-      raw: true,
-      nest: true,
-      exclude: ['password'],
-      include: [
-        { model: Tutor }
-      ]
-    })
-      .then(user => {
-        if (!user) throw new Error('無該名使用者')
-        Course.findAll({
-          raw: true,
-          nest: true,
-          where: { tutorId: user.Tutor.id },
-          order: [['time', 'ASC']],
-          include: [
-            { model: User }
-          ]
-        })
-          .then(courses => {
-            // 平均評價分數
-            let avgRating = 0;
-            const ratings = courses.map((courseItem) => courseItem.rating).filter((rating) => rating !== null);
-            if (ratings.length > 0) {
-              const totalRating = ratings.reduce((a, b) => a + b, 0);
-              avgRating = (totalRating / ratings.length).toFixed(1);
-            }
-
-            // 未來課程
-            const futureCourses = courses.filter(courseItem => {
-              return new Date(courseItem.time) >= new Date()
-            }).map(courseItem => ({
-              ...courseItem,
-              time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
-            }))
-
-            // 被評價過的課程
-            const ratedCourses = courses.filter(courseItem => {
-              return courseItem.rating !== null
-            }).slice(-5)
-
-            return res.render('tutor/profile', {
-              user,
-              futureCourses,
-              ratedCourses,
-              avgRating
-            })
-          })
-          .catch(err => next(err))
+      const user = await User.findByPk(userId, {
+        raw: true,
+        nest: true,
+        exclude: ['password'],
+        include: [{ model: Tutor }]
       })
-      .catch(err => next(err))
+
+      if (!user) {
+        throw new Error('無該名使用者')
+      }
+
+      const courses = await Course.findAll({
+        raw: true,
+        nest: true,
+        where: { tutorId: user.Tutor.id },
+        order: [['time', 'ASC']],
+        include: [{ model: User }]
+      })
+
+      // 平均評價分數
+      let avgRating = 0
+      const ratings = courses.map(courseItem => courseItem.rating).filter(rating => rating !== null)
+      if (ratings.length > 0) {
+        const totalRating = ratings.reduce((a, b) => a + b, 0)
+        avgRating = (totalRating / ratings.length).toFixed(1)
+      }
+
+      // 未來課程
+      const futureCourses = courses
+        .filter(courseItem => new Date(courseItem.time) >= new Date())
+        .map(courseItem => ({
+          ...courseItem,
+          time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
+        }))
+
+      // 已被評價的課程
+      const ratedCourses = courses
+        .filter(courseItem => courseItem.rating !== null)
+        .slice(-5)
+
+      return res.render('tutor/profile', {
+        user,
+        futureCourses,
+        ratedCourses,
+        avgRating
+      })
+    } catch (err) {
+      next(err)
+    }
   },
   editProfile: (req, res, next) => {
     const userId = req.user.id
