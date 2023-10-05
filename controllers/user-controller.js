@@ -187,22 +187,29 @@ const userController = {
         }
         const weekday = (today + day) % 7
         if (teachingTime.includes(weekday)) {
+          // 生成时间
           for (let i = courseTime.start; i < courseTime.end; i++) {
-            if (duration === 30) {
-              availableTimes.push(
-                dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm'),
-                dayjs().add(day, 'day').hour(i).minute(30).format('YYYY-MM-DD HH:mm')
-              )
-            }
-            if (duration === 60) {
-              availableTimes.push(dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm'))
+            const formattedTime = dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm')
+            if (!bookedCourses.includes(formattedTime)) {
+              // 只有当时间符合老师 teaching_time 且未被预约时才将其添加到可预约时间中
+              if (duration === 30) {
+                availableTimes.push(
+                  formattedTime,
+                  dayjs().add(day, 'day').hour(i).minute(30).format('YYYY-MM-DD HH:mm')
+                )
+              }
+              if (duration === 60) {
+                availableTimes.push(formattedTime)
+              }
             }
           }
         }
       }
 
       // 去除被預約的課程，取得可預約的課程
-      const unbookedCourses = availableTimes.filter(availableTime => !bookedCourses.includes(availableTime))
+      const unbookedCourses = Array.isArray(bookedCourses)
+        ? availableTimes.filter(availableTime => !bookedCourses.includes(availableTime))
+        : availableTimes
 
       // 老師的平均評價
       let avgRating = 0

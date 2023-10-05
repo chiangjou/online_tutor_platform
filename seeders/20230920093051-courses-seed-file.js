@@ -2,56 +2,38 @@
 const faker = require('faker')
 const { DateTime } = require('luxon')
 
-// 生成過去時間
-function getRandomPastTime (teachingTime) {
-  // 過去一年的隨機時間
-  const now = DateTime.now().setZone('Asia/Taipei')
-  const pastDate = faker.date.between(now.minus({ years: 1 }).toJSDate(), now.toJSDate())
-
-  // 18:00 到 21:00 之間每小時的 30 分或每整點
-  const randomHours = Math.floor(Math.random() * 3) + 18
-  const randomMinutes = Math.random() < 0.5 ? 0 : 30
-
-  // 轉換台北時區
-  const taipeiTime = DateTime.fromJSDate(pastDate, { zone: 'Asia/Taipei' })
-  const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 })
-
-  // 檢查生成的時間是否符合老師的 teaching_time
-  // 獲取星期幾（0: 星期日, 1: 星期一, 2: 星期二 ...）
-  const selectedDayOfWeek = formattedTime.weekday
-  if (teachingTime.includes(selectedDayOfWeek.toString())) {
-    const formattedPastTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
-    return formattedPastTime
-  } else {
-    // 如果不符合老師 teaching_time，重新生成時間
-    return getRandomPastTime(teachingTime)
-  }
+// 生成隨機時間加進 bookedCourses
+function generateRandomTime (teachingTime, bookedCourses, isPast) {
+  const randomTime = getRandomTime(teachingTime, bookedCourses, isPast)
+  bookedCourses.push(randomTime)
+  return randomTime
 }
 
-function getRandomFutureTime (teachingTime) {
-  // 未來兩週的隨機時間
-  const futureDate = faker.date.between(
-    DateTime.now().setZone('Asia/Taipei').toJSDate(),
-    DateTime.now().setZone('Asia/Taipei').plus({ days: 14 }).toJSDate()
-  )
+// 生成隨機時間
+function getRandomTime (teachingTime, bookedCourses, isPast) {
+  const now = DateTime.now().setZone('Asia/Taipei')
+  // 過去一年時間
+  const minDate = isPast ? now.minus({ years: 1 }).toJSDate() : now.toJSDate()
+  // 未來兩週時間
+  const maxDate = isPast ? now.toJSDate() : now.plus({ days: 14 }).toJSDate()
+  const time = faker.date.between(minDate, maxDate)
 
-  // 18:00 到 21:00 之間每小時的 30 分或每整點
+  // 生成介於 18:00~21:00 的每個整點或 30 分的時間
   const randomHours = Math.floor(Math.random() * 3) + 18
   const randomMinutes = Math.random() < 0.5 ? 0 : 30
 
   // 轉換台北時區
-  const taipeiTime = DateTime.fromJSDate(futureDate, { zone: 'Asia/Taipei' })
+  const taipeiTime = DateTime.fromJSDate(time, { zone: 'Asia/Taipei' })
   const formattedTime = taipeiTime.set({ hour: randomHours, minute: randomMinutes, second: 0 })
 
-  // 檢查生成的時間是否符合老師的 teaching_time
-  // 獲取星期幾（0: 星期日, 1: 星期一, 2: 星期二 ...）
   const selectedDayOfWeek = formattedTime.weekday
-  if (teachingTime.includes(selectedDayOfWeek.toString())) {
-    const formattedFutureTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
-    return formattedFutureTime
+  const formattedRandomTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
+
+  // 檢查是否符合老師的 teaching time 及課程是否被預約
+  if (teachingTime.includes(selectedDayOfWeek.toString()) && !bookedCourses.includes(formattedRandomTime)) {
+    return formattedRandomTime
   } else {
-    // 如果不符合老師 teaching_time，重新生成時間
-    return getRandomFutureTime(teachingTime)
+    return getRandomTime(teachingTime, bookedCourses, isPast)
   }
 }
 
@@ -62,15 +44,19 @@ module.exports = {
       const tutors = await queryInterface.sequelize.query('SELECT id, duration, teaching_time from Tutors;')
       const courses = []
       const maxCommentLength = 100
+      const bookedCourses = {}
 
-      // 生成每個學生都上過兩堂課，且尚未評分與留言的課程
+      // 每個學生都上過兩堂課，且尚未評分與留言的課程
       users[0].forEach((user, i) => {
         Array.from({ length: 2 }).forEach(() => {
           const randomTutorIndex = Math.floor(Math.random() * tutors[0].length)
           const selectedTutor = tutors[0][randomTutorIndex]
 
-          // 符合老師 teaching_time 的過去時間
-          const pastTime = getRandomPastTime(selectedTutor.teaching_time)
+          if (!bookedCourses[selectedTutor.id]) {
+            bookedCourses[selectedTutor.id] = []
+          }
+
+          const pastTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], true)
 
           courses.push({
             time: pastTime,
@@ -84,14 +70,17 @@ module.exports = {
         })
       })
 
-      // 生成每個學生都上過兩堂課，且已經評分與留言的課程
+      // 每個學生都上過兩堂課，且已經評分與留言的課程
       users[0].forEach((user, i) => {
         Array.from({ length: 2 }).forEach(() => {
           const randomTutorIndex = Math.floor(Math.random() * tutors[0].length)
           const selectedTutor = tutors[0][randomTutorIndex]
 
-          // 符合老師 teaching_time 的過去時間
-          const pastTime = getRandomPastTime(selectedTutor.teaching_time)
+          if (!bookedCourses[selectedTutor.id]) {
+            bookedCourses[selectedTutor.id] = []
+          }
+
+          const pastTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], true)
 
           courses.push({
             time: pastTime,
@@ -113,8 +102,11 @@ module.exports = {
           const randomTutorIndex = Math.floor(Math.random() * tutors[0].length)
           const selectedTutor = tutors[0][randomTutorIndex]
 
-          // 符合老師 teaching_time 的未來時間
-          const futureTime = getRandomFutureTime(selectedTutor.teaching_time)
+          if (!bookedCourses[selectedTutor.id]) {
+            bookedCourses[selectedTutor.id] = []
+          }
+
+          const futureTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], false)
 
           courses.push({
             time: futureTime,
@@ -128,14 +120,17 @@ module.exports = {
         })
       })
 
-      // 生成每個老師都上過兩堂課，且已被評分與留言
+      // 每個老師都上過兩堂課，且已被評分與留言
       tutors[0].forEach(tutor => {
         Array.from({ length: 2 }).forEach(() => {
           const randomUserIndex = Math.floor(Math.random() * users[0].length)
           const selectedUser = users[0][randomUserIndex]
 
-          // 符合老師 teaching_time 的過去時間
-          const pastTime = getRandomPastTime(tutor.teaching_time)
+          if (!bookedCourses[tutor.id]) {
+            bookedCourses[tutor.id] = []
+          }
+
+          const pastTime = generateRandomTime(tutor.teaching_time, bookedCourses[tutor.id], true)
 
           courses.push({
             time: pastTime,
@@ -157,8 +152,11 @@ module.exports = {
           const randomUserIndex = Math.floor(Math.random() * users[0].length)
           const selectedUser = users[0][randomUserIndex]
 
-          // 符合老師 teaching_time 的未來時間
-          const futureTime = getRandomFutureTime(tutor.teaching_time)
+          if (!bookedCourses[tutor.id]) {
+            bookedCourses[tutor.id] = []
+          }
+
+          const futureTime = generateRandomTime(tutor.teaching_time, bookedCourses[tutor.id], false)
 
           courses.push({
             time: futureTime,
