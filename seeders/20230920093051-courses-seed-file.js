@@ -8,8 +8,8 @@ function getRandomPastTime (teachingTime) {
   const now = DateTime.now().setZone('Asia/Taipei')
   const pastDate = faker.date.between(now.minus({ years: 1 }).toJSDate(), now.toJSDate())
 
-  // 18:00 到 22:00 之間每小時的 30 分或每整點
-  const randomHours = Math.floor(Math.random() * 4) + 18
+  // 18:00 到 21:00 之間每小時的 30 分或每整點
+  const randomHours = Math.floor(Math.random() * 3) + 18
   const randomMinutes = Math.random() < 0.5 ? 0 : 30
 
   // 轉換台北時區
@@ -35,8 +35,8 @@ function getRandomFutureTime (teachingTime) {
     DateTime.now().setZone('Asia/Taipei').plus({ days: 14 }).toJSDate()
   )
 
-  // 18:00 到 22:00 之間每小時的 30 分或每整點
-  const randomHours = Math.floor(Math.random() * 4) + 18
+  // 18:00 到 21:00 之間每小時的 30 分或每整點
+  const randomHours = Math.floor(Math.random() * 3) + 18
   const randomMinutes = Math.random() < 0.5 ? 0 : 30
 
   // 轉換台北時區

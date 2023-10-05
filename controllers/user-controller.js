@@ -183,7 +183,7 @@ const userController = {
       for (let day = 0; day < availableBookDays; day++) {
         const courseTime = {
           start: 18,
-          end: 22
+          end: 21
         }
         const weekday = (today + day) % 7
         if (teachingTime.includes(weekday)) {
