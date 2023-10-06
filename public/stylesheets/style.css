@@ -173,3 +173,23 @@ td {
   padding: 5px 10px;
   display: flex;
 }
+
+#admin-nav-item {
+  width: 100px;
+}
+
+.nav-link, .nav-link:hover {
+  color: black;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #308882;
+  color: white;
+}
+
+.nav-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+}
