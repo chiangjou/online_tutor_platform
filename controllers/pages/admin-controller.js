@@ -1,6 +1,6 @@
-const { User, Tutor } = require('../models')
+const { User, Tutor } = require('../../models')
 const { Op } = require('sequelize')
-const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const { getOffset, getPagination } = require('../../helpers/pagination-helper')
 const dayjs = require('dayjs')
 
 const adminController = {

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const adminController = require('../../controllers/admin-controller')
-const { authenticatedAdmin } = require('../../middleware/auth')
+const adminController = require('../../../controllers/pages/admin-controller')
+const { authenticatedAdmin } = require('../../../middleware/auth')
 
 router.get('/users/search', authenticatedAdmin, adminController.searchUsers)
 router.get('/students/search', authenticatedAdmin, adminController.searchStudents)

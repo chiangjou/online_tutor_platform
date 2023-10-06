@@ -11,7 +11,7 @@ const methodOverride = require('method-override')
 const path = require('path')
 const handlebarsHelpers = require('./helpers/handlebars-helpers')
 const { getUser } = require('./helpers/auth-helpers')
-const routes = require('./routes')
+const { pages } = require('./routes')
 const app = express()
 const port = process.env.PORT
 
@@ -55,7 +55,7 @@ app.use((req, res, next) => {
 // path
 app.use('/upload', express.static(path.join(__dirname, 'upload')))
 
-app.use(routes)
+app.use(pages)
 
 app.listen(port, () => console.log(`App is listening on port http://localhost:${port}`))
 

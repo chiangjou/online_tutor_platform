@@ -1,4 +1,4 @@
-const { Tutor, Course } = require('../models')
+const { Tutor, Course } = require('../../models')
 const dayjs = require('dayjs')
 
 const courseController = {

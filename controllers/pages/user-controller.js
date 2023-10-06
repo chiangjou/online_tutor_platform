@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
-const { User, Tutor, Course, sequelize } = require('../models')
-const { getOffset, getPagination } = require('../helpers/pagination-helper')
-const { localFileHandler } = require('../helpers/file-helpers')
+const { User, Tutor, Course, sequelize } = require('../../models')
+const { getOffset, getPagination } = require('../../helpers/pagination-helper')
+const { localFileHandler } = require('../../helpers/file-helpers')
 const dayjs = require('dayjs')
 
 const userController = {

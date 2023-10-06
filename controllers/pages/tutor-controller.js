@@ -1,6 +1,6 @@
-const { User, Tutor, Course } = require('../models')
+const { User, Tutor, Course } = require('../../models')
+const { localFileHandler } = require('../../helpers/file-helpers')
 const dayjs = require('dayjs')
-const { localFileHandler } = require('../helpers/file-helpers')
 
 const tutorController = {
   getProfile: async (req, res, next) => {
