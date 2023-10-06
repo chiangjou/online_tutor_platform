@@ -193,3 +193,7 @@ td {
   align-items: center;
   height: 40px;
 }
+
+.table-header {
+  border-bottom: 2px solid #000000;
+}

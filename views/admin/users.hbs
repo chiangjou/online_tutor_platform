@@ -1,7 +1,7 @@
 {{>admin-tabs route='users'}}
 
-<table class="table align-middle">
-  <thead class="thead-dark">
+<table class="table align-middle table-striped">
+  <thead class="thead-dark table-header">
     <tr>
       <th scope="col">ID</th>
       <th scope="col">名字</th>
@@ -39,15 +39,13 @@
               <ul style="list-style-type: none;">
                 <li><strong>名字：</strong>{{this.name}}</li>
                 <li><strong>E-mail：</strong>{{this.email}}</li>
-                <li><strong>關於我：</strong>
-                  <p>{{this.introduction}}</p>
-                </li>
+
                 <li><strong>加入時間：</strong>{{this.createdAt}}</li>
               </ul>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            <button type="button" class="custom-solid-button" style="font-size: 15px; padding: 8px;" data-bs-dismiss="modal">關閉</button>
           </div>
         </div>
       </div>
