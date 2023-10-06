@@ -239,6 +239,10 @@ const userController = {
       return res.status(403).send('無法查看其他使用者頁面')
     }
 
+    if (req.user.isAdmin) {
+      return res.status(403).send('管理員無個人頁面')
+    }
+
     try {
       const user = await User.findByPk(userId, {
         attributes: { exclude: ['password'] },
