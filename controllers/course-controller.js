@@ -2,37 +2,37 @@ const { Tutor, Course } = require('../models')
 const dayjs = require('dayjs')
 
 const courseController = {
-  bookCourse: (req, res, next) => {
-    const tutorId = req.params.id
-    const userId = req.user.id
-    const { bookTime } = req.body
-    if (!dayjs(bookTime).isValid()) throw new Error('請選擇日期')
+  bookCourse: async (req, res, next) => {
+    try {
+      const tutorId = req.params.id
+      const userId = req.user.id
+      const { bookDate } = req.body
 
-    return Promise.all([
-      Tutor.findByPk(tutorId, { raw: true }),
-      Course.findOne({
-        where: {
-          time: bookTime,
-          tutorId
-        }
-      })
-    ])
-      .then(([tutor, courses]) => {
-        if (tutor.userId === userId) throw new Error('無法預約自己的課程')
-        if (courses) throw new Error('此時段已經被預約')
+      if (!dayjs(bookDate).isValid()) throw new Error('請選擇日期')
 
-        return Course.create({
-          time: bookTime,
-          duration,
-          tutorId,
-          userId
+      const [tutor, course] = await Promise.all([
+        Tutor.findByPk(tutorId, { raw: true }),
+        Course.findOne({
+          where: {
+            time: bookDate,
+            tutorId
+          }
         })
+      ])
+
+      if (tutor.userId === userId) throw new Error('無法預約自己的課程')
+      if (course) throw new Error('此時段已經被預約')
+
+      await Course.create({
+        time: bookDate,
+        tutorId,
+        userId
       })
-      .then(() => {
-        req.flash('success_messages', '預約成功')
-        return res.redirect(`/tutors/${req.params.id}`)
-      })
-      .catch(err => next(err))
+      req.flash('success_messages', '預約成功')
+      return res.redirect(`/tutors/${req.params.id}`)
+    } catch (err) {
+      next(err)
+    }
   },
   rateCourse: async (req, res, next) => {
     const courseId = req.params.id
