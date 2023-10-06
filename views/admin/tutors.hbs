@@ -1,10 +1,24 @@
 {{>admin-tabs route='tutors'}}
 
-<table class="table align-middle table-striped mt-5">
+{{!-- 搜尋框 --}}
+<div class="row" id="search-bar" style="margin-right: 10px;">
+  <form action="/admin/tutors/search" method="GET">
+    <div class="input-group mb-3">
+      <input type="text" name="keyword" class="form-control" id="search-bar" placeholder="搜尋名字、國家、介紹、教學風格"
+        aria-label="keyword" aria-describedby="search-button" value="{{keyword}}">
+      <div class="input-group-append">
+        <button class="custom-solid-button mx-2" type="submit" id="search-button">搜尋</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<table class="table align-middle table-striped mt-3">
   <thead class="thead-dark table-header">
     <tr>
       <th scope="col">ID</th>
       <th scope="col">名字</th>
+      <th scope="col">國家</th>
     </tr>
   </thead>
   <div>
@@ -17,6 +31,7 @@
           {{this.name}}
         </button>
       </td>
+      <td>{{this.nation}}</td>
     </tr>
 
     <!-- Modal -->
@@ -37,11 +52,12 @@
               <ul style="list-style-type: none;">
                 <li><strong>名字：</strong>{{this.name}}</li>
                 <li><strong>E-mail：</strong>{{this.email}}</li>
-                <li><strong>課程方式：</strong>
-                  <p>{{this.Tutor.teachingStyle}}</p>
-                </li>
-                <li><strong>課程介紹：</strong>
+                <li><strong>國家：</strong>{{this.nation}}</li>
+                <li><strong>關於我：</strong>
                   <p>{{this.Tutor.tutorIntroduction}}</p>
+                </li>
+                <li><strong>教學風格：</strong>
+                  <p>{{this.Tutor.teachingStyle}}</p>
                 </li>
               </ul>
             </div>
@@ -58,9 +74,9 @@
 </table>
 
 <nav class="mt-5" aria-label="page navigation">
-  <ul class="pagination">
+  <ul class="pagination justify-content-center">
     <li class="page-item {{#ifCond pagination.currentPage 1}}disabled{{/ifCond}}">
-      <a class="page-link" href="/admin/users?page={{pagination.prev}}" aria-label="Previous">
+      <a class="page-link" href="/admin/tutors?page={{pagination.prev}}&keyword={{keyword}}" aria-label="Previous">
         <span aria-hidden="true">&laquo;</span>
       </a>
     </li>
@@ -69,12 +85,12 @@
     <li class="page-item active"><a class="page-link" href="#">{{this}}</a></li>
     {{else}}
     <li class="page-item">
-      <a class="page-link" href="/admin/users?page={{this}}">{{this}}</a>
+      <a class="page-link" href="/admin/tutors?page={{this}}&keyword={{keyword}}">{{this}}</a>
     </li>
     {{/ifCond}}
     {{/each}}
     <li class="page-item {{#ifCond pagination.currentPage pagination.totalPage}}disabled{{/ifCond}}">
-      <a class="page-link" href="/admin/users?page={{pagination.next}}" aria-label="Next">
+      <a class="page-link" href="/admin/tutors?page={{pagination.next}}&keyword={{keyword}}" aria-label="Next">
         <span aria-hidden="true">&raquo;</span>
       </a>
     </li>
