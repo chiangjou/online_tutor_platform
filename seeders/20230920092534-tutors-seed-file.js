@@ -12,6 +12,8 @@ module.exports = {
 
       await queryInterface.bulkInsert('Tutors',
         Array.from({ length: 30 }).map((d, i) => {
+          queryInterface.sequelize.query(`UPDATE Users SET is_tutor = true WHERE id = ${shuffledUsers[i].id}`)
+
           // 檢查隨機抽取的 user 中是否有 user2
           if (shuffledUsers[i].name === 'user2') {
             updatedUser2 = true
