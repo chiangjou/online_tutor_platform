@@ -83,7 +83,8 @@ const userController = {
           model: User,
           attributes: ['name', 'avatar'],
           where: {
-            isAdmin: false
+            isAdmin: false,
+            isTutor: false
           }
         }
       ]
