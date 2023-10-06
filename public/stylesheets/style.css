@@ -197,3 +197,73 @@ td {
 .table-header {
   border-bottom: 2px solid #000000;
 }
+
+
+/* ---------- Messages ---------- */
+
+.msg-container {
+  position: absolute;
+  top:100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  width: 394px;
+  height: 96px;
+  z-index: 100;
+  background-color: #FFFFFF;
+  border: 0px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 16px 0px #33333314, 0px 4px 4px 0px #3333330A;
+  opacity: 0;
+}
+
+@keyframes toHidden {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.msg-container .msg {
+  margin-left: 24px;
+  font-family: 'Roboto';
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  color: #000000;
+}
+
+.msg-container .btn-container {
+  display: flex;
+  align-items: center;
+}
+
+.btn-container button {
+  margin-right: 24px;
+  background-color: transparent;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+}
+
+.btn-container .btn-error {
+  border: 2px solid #FC5A5A;
+}
+
+.btn-container .btn-success {
+  border: 2px solid #3DD598;
+}
+
+.btn-container .btn-warning {
+  border: 2px solid #FFC542;
+}
+
+.btn-container .btn-info {
+  border: 2px solid #50B5FF;
+}

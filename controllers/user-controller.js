@@ -8,33 +8,41 @@ const userController = {
   signUpPage: (req, res) => {
     res.render('signup')
   },
-  signUp: (req, res, next) => {
-    const { name, email, password, passwordCheck } = req.body
-    if (!name || !email || !password || !passwordCheck) throw new Error('所有欄位皆為必填')
-    if (password !== passwordCheck) throw new Error('密碼不相符，請再次確認密碼')
-    if (!email.includes('@')) throw new Error('Email 格式錯誤，應包含「@」符號')
+  signUp: async (req, res, next) => {
+    try {
+      const { name, email, password, passwordCheck } = req.body
+      if (!name || !email || !password || !passwordCheck) {
+        throw new Error('所有欄位皆為必填')
+      }
+      if (password !== passwordCheck) {
+        throw new Error('密碼不相符，請再次確認密碼')
+      }
+      if (!email.includes('@')) {
+        throw new Error('Email 格式錯誤，應包含「@」符號')
+      }
 
-    return User.findOne({
-      where: { email }
-    })
-      .then(user => {
-        if (user) {
-          if (user.toJSON().email === email) throw new Error('此 Email 已被註冊')
-        }
-        return bcrypt.hash(password, 10)
+      const existingUser = await User.findOne({
+        where: { email }
       })
-      .then(hash => User.create({
+      if (existingUser) {
+        throw new Error('此 Email 已被註冊')
+      }
+
+      const hash = await bcrypt.hash(password, 10)
+
+      await User.create({
         name,
         email,
         password: hash,
         isAdmin: 0,
         isTutor: 0
-      }))
-      .then(() => {
-        req.flash('success_messages', '成功註冊帳號')
-        res.redirect('/signin')
       })
-      .catch(err => next(err))
+
+      req.flash('success_messages', '成功註冊帳號')
+      res.redirect('/signin')
+    } catch (err) {
+      next(err)
+    }
   },
   signInPage: (req, res) => {
     res.render('signin')
