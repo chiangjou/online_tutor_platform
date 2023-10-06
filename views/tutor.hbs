@@ -62,6 +62,7 @@
 
   {{!-- 右側預約課程 --}}
   <div class="col-md-4">
+    {{#if (or (not req.user.isAdmin) (not req.user.isTutor))}}
     <form action="/tutors/{{tutor.id}}/booking" method="POST">
       <h4 class="mb-3">預約上課</h4>
       <select name="bookDate" id="bookDate" class="form-control mb-3" style="font-size: 15px; padding: 8px">
@@ -80,6 +81,9 @@
       </div>
       {{> booking-modal}}
     </form>
+    {{else}}
+    <p>非學生身份無法預約課程</p>
+    {{/if}}
   </div>
 </div>
 

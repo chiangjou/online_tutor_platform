@@ -9,6 +9,7 @@ const courseController = {
       const { bookDate } = req.body
 
       if (!dayjs(bookDate).isValid()) throw new Error('請選擇日期')
+      if (req.user.isTutor || req.user.isAdmin) throw new Error('只有學生可以預約課程')
 
       const [tutor, course] = await Promise.all([
         Tutor.findByPk(tutorId, { raw: true }),
