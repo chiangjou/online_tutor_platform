@@ -16,44 +16,44 @@
         {{!-- 管理員身份 --}}
         {{#if user.isAdmin}}
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item mx-3">
-            <a href="/admin" class="nav-link">使用者清單</a>
-          </li>
           <li class="nav-item">
-            <a href="/logout" class="custom-button my-sm-0 my-2">登出</a>
+            <a href="/admin" class="header-nav-link">管理者後台</a>
+          </li>
+          <li class="nav-item header-btn">
+            <a href="/logout" class="custom-button my-sm-0 my-2" style="padding: 5px 10px;">登出</a>
           </li>
         </ul>
         {{!-- 老師身份 --}}
         {{else if user.isTutor}}
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
           <li class="nav-item mx-3">
-            <a href="/tutor/{{ user.id }}" class="nav-link">{{ user.name }}</a>
+            <a href="/tutor/{{ user.id }}" class="header-nav-link">{{ user.name }}</a>
           </li>
-          <li class="nav-item">
-            <a href="/logout" class="custom-button my-sm-0 my-2">登出</a>
+          <li class="nav-item header-btn">
+            <a href="/logout" class="custom-button my-sm-0 my-2" style="padding: 5px 10px;">登出</a>
           </li>
         </ul>
         {{!-- 一般使用者身份 --}}
         {{else}}
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
           <li class="nav-item">
-            <a href="/users/{{ user.id }}" class="nav-link">{{ user.name }}</a>
-          </li>
-          <li class="nav-item mx-3">
-            <a href="/users/{{ user.id }}/apply" class="nav-link">成為老師</a>
+            <a href="/users/{{ user.id }}" class="header-nav-link">{{ user.name }}</a>
           </li>
           <li class="nav-item">
-            <a href="/logout" class="custom-button my-sm-0 my-2">登出</a>
+            <a href="/users/{{ user.id }}/apply" class="header-nav-link">成為老師</a>
+          </li>
+          <li class="nav-item header-btn">
+            <a href="/logout" class="custom-button my-sm-0 my-2" style="padding: 5px 10px;">登出</a>
           </li>
         </ul>
         {{/if}}
         {{else}}
         {{!-- 未登入用戶 --}}
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item">
+          <li class="nav-item header-btn">
             <a href="/login"><button class="custom-button m-2" style="padding: 5px 10px;">登入</button></a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item header-btn">
             <a href="/signup"><button class="custom-solid-button m-2" style="padding: 5px 10px;">註冊</button></a>
           </li>
         </ul>

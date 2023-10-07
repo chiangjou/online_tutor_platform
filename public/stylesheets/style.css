@@ -178,7 +178,8 @@ td {
   width: 100px;
 }
 
-.nav-link, .nav-link:hover {
+.nav-link,
+.nav-link:hover {
   color: black;
 }
 
@@ -198,12 +199,32 @@ td {
   border-bottom: 2px solid #000000;
 }
 
+/* ---------- header ---------- */
+
+.header-nav-link {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 40px;
+  color: #000000;
+}
+
+.header-nav-link:hover {
+  color: #308882;
+  font-weight: 500;
+}
+
+.header-btn {
+  display: flex;
+  justify-content: end;
+}
+
 
 /* ---------- Messages ---------- */
 
 .msg-container {
   position: absolute;
-  top:100px;
+  top: 100px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
