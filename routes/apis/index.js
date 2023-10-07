@@ -8,7 +8,13 @@ const { generalErrorHandler } = require('../../middleware/error-handler')
 const adminController = require('../../controllers/pages/admin-controller')
 const userController = require('../../controllers/pages/user-controller')
 
+router.get('/users/search', authenticated, authenticatedAdmin, adminController.searchUsers)
+router.get('/students/search', authenticated, authenticatedAdmin, adminController.searchStudents)
+router.get('/tutors/search', authenticated, authenticatedAdmin, adminController.searchTutors)
+
 router.get('/users', authenticated, authenticatedAdmin, adminController.getUsers)
+router.get('/students', authenticated, authenticatedAdmin, adminController.getStudents)
+router.get('/tutors', authenticated, authenticatedAdmin, adminController.getTutors)
 
 router.post('/signin', passport.authenticate('local', { failureRedirect: '/signin', failureFlash: true }), userController.signIn)
 router.post('/signup', userController.signUp)

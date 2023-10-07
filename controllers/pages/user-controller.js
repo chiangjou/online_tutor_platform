@@ -25,7 +25,7 @@ const userController = {
   getTutor: (req, res, next) => {
     userServices.getTutor(req, (err, data) => err ? next(err) : res.render('tutor', data))
   },
-  searchTutors: async (req, res, next) => {
+  searchTutors: (req, res, next) => {
     userServices.searchTutors(req, (err, data) => err ? next(err) : res.render('tutors', data))
   },
   getProfile: (req, res, next) => {
