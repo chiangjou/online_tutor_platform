@@ -6,6 +6,7 @@ const { authenticated, authenticatedAdmin } = require('../../middleware/api-auth
 const { generalErrorHandler } = require('../../middleware/error-handler')
 
 const adminController = require('../../controllers/pages/admin-controller')
+const tutorController = require('../../controllers/pages/tutor-controller')
 const userController = require('../../controllers/pages/user-controller')
 
 router.get('/users/search', authenticated, authenticatedAdmin, adminController.searchUsers)
@@ -29,6 +30,10 @@ router.put('/users/:id', authenticated, upload.single('avatar'), userController.
 
 router.get('/users/:id/apply', authenticated, userController.getApply)
 router.post('/users/:id/apply', authenticated, upload.single('avatar'), userController.postApply)
+
+router.get('/tutor/:id', authenticated, tutorController.getProfile)
+router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
+router.put('/tutor/:id', authenticated, upload.single('avatar'), tutorController.putProfile)
 
 router.use('/', generalErrorHandler)
 
