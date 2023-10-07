@@ -353,7 +353,7 @@ const userController = {
         order: [['time', 'ASC']],
         include: [{
           model: Tutor,
-          attributes: ['id', 'userId', 'teachingLink'],
+          attributes: ['id', 'userId', 'duration', 'teachingLink'],
           include: [{
             model: User,
             attributes: ['name', 'avatar']
@@ -363,15 +363,25 @@ const userController = {
 
       // 格式化時間
       function formatCourseTime (courses) {
-        return courses.map(courseItem => ({
-          ...courseItem,
-          time: dayjs(courseItem.time).format('YYYY-MM-DD(dd) HH:mm')
-        }))
+        return courses.map(courseItem => {
+          const startTime = dayjs(courseItem.time)
+          const endTime = startTime.add(courseItem.Tutor.duration, 'minutes')
+          return {
+            ...courseItem,
+            time: `${startTime.format('YYYY-MM-DD(dd) HH:mm')} ~ ${endTime.format('YYYY-MM-DD(dd) HH:mm')}`
+          }
+        })
       }
+
       // 過去課程
-      const pastCourses = formatCourseTime(courses.filter(courseItem => new Date(courseItem.time) < new Date())).reverse()
+      const pastCourses = formatCourseTime(
+        courses.filter(courseItem => new Date(courseItem.time) < new Date())
+      ).reverse()
+
       // 未來課程
-      const futureCourses = formatCourseTime(courses.filter(courseItem => new Date(courseItem.time) >= new Date()))
+      const futureCourses = formatCourseTime(
+        courses.filter(courseItem => new Date(courseItem.time) >= new Date())
+      )
 
       // 計算學習時數及排名
       const ranking = await Course.findAll({

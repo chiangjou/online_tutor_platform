@@ -33,13 +33,23 @@ const tutorController = {
         avgRating = (totalRating / ratings.length).toFixed(1)
       }
 
+      // 格式化時間
+      function formatCourseTime (courses) {
+        return courses.map(courseItem => {
+          const duration = user.Tutor?.duration
+          const startTime = dayjs(courseItem.time)
+          const endTime = duration ? startTime.add(duration, 'minutes') : null
+          return {
+            ...courseItem,
+            time: endTime ? `${startTime.format('YYYY-MM-DD(dd) HH:mm')} ~ ${endTime.format('YYYY-MM-DD(dd) HH:mm')}` : ''
+          }
+        })
+      }
+
       // 未來課程
-      const futureCourses = courses
-        .filter(courseItem => new Date(courseItem.time) >= new Date())
-        .map(courseItem => ({
-          ...courseItem,
-          time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
-        }))
+      const futureCourses = formatCourseTime(
+        courses.filter(courseItem => new Date(courseItem.time) >= new Date())
+      )
 
       // 已被評價的課程
       const ratedCourses = courses
