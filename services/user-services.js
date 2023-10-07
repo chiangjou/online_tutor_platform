@@ -186,29 +186,48 @@ const userController = {
         if (teachingTime.includes(weekday)) {
           // 生成時間
           for (let i = courseTime.start; i < courseTime.end; i++) {
-            const formattedTime = dayjs()
+            const startFormattedTime = dayjs()
               .add(day, 'day')
               .hour(i)
               .minute(0)
               .format('YYYY-MM-DD(dd) HH:mm')
 
-            if (!bookedCourses.includes(formattedTime)) {
+            if (!bookedCourses.includes(startFormattedTime)) {
               // 當時間符合 teaching_time 且未被預約時才將課程加入
               if (duration === 30) {
+                const endFormattedTime = dayjs()
+                  .add(day, 'day')
+                  .hour(i)
+                  .minute(30)
+                  .format('YYYY-MM-DD(dd) HH:mm')
+
                 availableTimes.push({
-                  formattedTime
+                  formattedTime: `${startFormattedTime} ~ ${endFormattedTime}`
                 })
+
+                const nextStartFormattedTime = dayjs()
+                  .add(day, 'day')
+                  .hour(i)
+                  .minute(30)
+                  .format('YYYY-MM-DD(dd) HH:mm')
+
+                const nextEndFormattedTime = dayjs()
+                  .add(day, 'day')
+                  .hour(i + 1)
+                  .minute(0)
+                  .format('YYYY-MM-DD(dd) HH:mm')
+
                 availableTimes.push({
-                  time: dayjs()
-                    .add(day, 'day')
-                    .hour(i)
-                    .minute(30)
-                    .format('YYYY-MM-DD(dd) HH:mm')
+                  formattedTime: `${nextStartFormattedTime} ~ ${nextEndFormattedTime}`
                 })
               }
               if (duration === 60) {
                 availableTimes.push({
-                  formattedTime
+                  formattedTime: `${startFormattedTime} ~ ${dayjs()
+                    .add(day, 'day')
+                    .hour(i + 1)
+                    .minute(0)
+                    .format('YYYY-MM-DD(dd) HH:mm')}`
                 })
               }
             }
