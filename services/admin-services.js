@@ -116,7 +116,8 @@ const adminController = {
         const data = users.rows.map(user => ({
           ...user,
           name: user.name.toLowerCase(),
-          nation: user.nation.toLowerCase()
+          nation: user.nation.toLowerCase(),
+          createdAt: dayjs(user.createdAt).format('YYYY-MM-DD')
         }))
 
         const searchedUsers = data.filter(user => {
@@ -156,7 +157,8 @@ const adminController = {
         const data = students.rows.map(student => ({
           ...student,
           name: student.name.toLowerCase(),
-          nation: student.nation.toLowerCase()
+          nation: student.nation.toLowerCase(),
+          createdAt: dayjs(student.createdAt).format('YYYY-MM-DD')
         }))
 
         const searchedStudents = data.filter(student => {
@@ -202,7 +204,8 @@ const adminController = {
           name: tutor.name.toLowerCase(),
           nation: tutor.nation.toLowerCase(),
           tutorIntroduction: tutor.Tutor.tutorIntroduction.toLowerCase(),
-          teachingStyle: tutor.Tutor.teachingStyle.toLowerCase()
+          teachingStyle: tutor.Tutor.teachingStyle.toLowerCase(),
+          createdAt: dayjs(tutor.createdAt).format('YYYY-MM-DD')
         }))
 
         const searchedTutors = data.filter(tutor => {

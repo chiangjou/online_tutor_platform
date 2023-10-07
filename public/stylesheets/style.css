@@ -1,3 +1,30 @@
+/* ---------- Modal ---------- */
+
+.admin-modal-list li {
+  padding-bottom: 10px;
+}
+
+
+/* ---------- Pagination ---------- */
+
+.page-link {
+  border: 1px solid #0e4d4a;
+  color: #308882;
+}
+
+.active>.page-link,
+.page-link.active {
+  border: 1px solid #0e4d4a;
+  background-color: #308882;
+}
+
+.pagination a.page-link:hover {
+  color: #0e4d4a;
+  background-color: #f0f0f0;
+  border-color: #0e4d4a;
+}
+
+
 i {
   color: #308882;
 }
@@ -114,22 +141,6 @@ i {
   font-weight: 400;
 }
 
-.page-link {
-  border: 1px solid #0e4d4a;
-  color: #308882;
-}
-
-.active>.page-link,
-.page-link.active {
-  border: 1px solid #0e4d4a;
-  background-color: #308882;
-}
-
-.pagination a.page-link:hover {
-  color: #0e4d4a;
-  background-color: #f0f0f0;
-  border-color: #0e4d4a;
-}
 
 #course-card {
   display: flex;
