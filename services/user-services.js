@@ -1,8 +1,10 @@
+const bcrypt = require('bcryptjs')
 const { User, Tutor, Course, sequelize } = require('../models')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
 const dayjs = require('dayjs')
-const bcrypt = require('bcryptjs')
+const localeZhCn = require('dayjs/locale/zh-cn')
+dayjs.locale(localeZhCn)
 
 const userController = {
   signUp: async (req, cb) => {
@@ -167,7 +169,7 @@ const userController = {
       // 已被預約的課程
       const bookedCourses = courses
         .filter(courseData => courseData.time > Date.now())
-        .map(courseData => dayjs(courseData.time).format('YYYY-MM-DD HH:mm'))
+        .map(courseData => dayjs(courseData.time).format('YYYY-MM-DD(dd) HH:mm'))
 
       // 開放預約的時間
       const availableTimes = []
@@ -179,21 +181,35 @@ const userController = {
           start: 18,
           end: 21
         }
+        // 獲取星期幾（0: 星期日, 1: 星期一, 2：星期二 ...）
         const weekday = (today + day) % 7
         if (teachingTime.includes(weekday)) {
           // 生成時間
           for (let i = courseTime.start; i < courseTime.end; i++) {
-            const formattedTime = dayjs().add(day, 'day').hour(i).minute(0).format('YYYY-MM-DD HH:mm')
+            const formattedTime = dayjs()
+              .add(day, 'day')
+              .hour(i)
+              .minute(0)
+              .format('YYYY-MM-DD(dd) HH:mm')
+
             if (!bookedCourses.includes(formattedTime)) {
               // 當時間符合 teaching_time 且未被預約時才將課程加入
               if (duration === 30) {
-                availableTimes.push(
-                  formattedTime,
-                  dayjs().add(day, 'day').hour(i).minute(30).format('YYYY-MM-DD HH:mm')
-                )
+                availableTimes.push({
+                  formattedTime
+                })
+                availableTimes.push({
+                  time: dayjs()
+                    .add(day, 'day')
+                    .hour(i)
+                    .minute(30)
+                    .format('YYYY-MM-DD(dd) HH:mm')
+                })
               }
               if (duration === 60) {
-                availableTimes.push(formattedTime)
+                availableTimes.push({
+                  formattedTime
+                })
               }
             }
           }
@@ -330,7 +346,7 @@ const userController = {
       function formatCourseTime (courses) {
         return courses.map(courseItem => ({
           ...courseItem,
-          time: dayjs(courseItem.time).format('YYYY-MM-DD HH:mm')
+          time: dayjs(courseItem.time).format('YYYY-MM-DD(dd) HH:mm')
         }))
       }
       // 過去課程

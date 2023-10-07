@@ -68,7 +68,7 @@
       <select name="bookDate" id="bookDate" class="form-control mb-3" style="font-size: 15px; padding: 8px">
         <option value="">選擇時間</option>
         {{#each unbookedCourses}}
-        <option id="selected-date" value="{{this}}">{{this}}</option>
+        <option id="selected-date" value="{{this.formattedTime}}">{{this.formattedTime}}</option>
         {{/each}}
       </select>
 
