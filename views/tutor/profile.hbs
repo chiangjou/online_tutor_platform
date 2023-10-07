@@ -58,15 +58,14 @@
 
           <div class="course-info m-2">
             {{!-- 學生名字 --}}
-            <span class="user-name">{{this.User.name}}</span>
+            <span class="user-name"><strong>{{this.User.name}}</strong></span>
             {{!-- 課程時間 --}}
-            <span>{{this.time}}</span>
+            <span style="font-size: 14px;">{{this.time}}</span>
           </div>
 
           {{!-- 課程連結 --}}
           <div class="d-flex align-items-center mx-3">
-            <a class="custom-solid-button " style="font-size: 15px; padding: 6px; color: white"
-              href="{{this.Tutor.teachingLink}}">進入教室</a>
+            <a href="{{this.Tutor.teachingLink}}"><i class="fa-solid fa-right-to-bracket"></i></a>
           </div>
         </div>
       </div>

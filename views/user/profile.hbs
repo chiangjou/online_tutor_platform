@@ -43,15 +43,13 @@
           <div class="course-info m-2">
             <a href="/tutors/{{this.Tutor.id}}">
               <span class="tutor-name">
-                {{this.Tutor.User.name}}
+                <strong>{{this.Tutor.User.name}}</strong>
               </span>
             </a>
-            <span>{{this.time}}</span>
+            <span style="font-size: 14px;">{{this.time}}</span>
           </div>
-
           <div class="d-flex align-items-center mx-3">
-            <a class="custom-solid-button " style="font-size: 15px; padding: 6px; color: white"
-              href="{{this.Tutor.teachingLink}}">進入教室</a>
+            <a href="{{this.Tutor.teachingLink}}"><i class="fa-solid fa-right-to-bracket"></i></a>
           </div>
         </div>
       </div>
@@ -80,10 +78,10 @@
           <div class="course-info m-2">
             <a href="/tutors/{{this.Tutor.id}}">
               <span class="tutor-name">
-                {{this.Tutor.User.name}}
+                <strong>{{this.Tutor.User.name}}</strong>
               </span>
             </a>
-            <span>{{this.time}}</span>
+            <span style="font-size: 14px;">{{this.time}}</span>
           </div>
 
           <div class="course-rating d-flex align-items-center mx-3">
@@ -93,9 +91,9 @@
             {{else}}
 
             <!-- Button trigger modal -->
-            <button type="button" class="custom-solid-button" style="font-size: 15px; padding: 6px"
+            <button type="button" style="background-color: white; border: none"
               data-bs-toggle="modal" data-bs-target="#ratting-course-{{this.id}}">
-              尚未評價
+              <i class="fa-solid fa-pen-to-square"></i>
             </button>
             {{> rating-modal}}
             {{/if}}
