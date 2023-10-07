@@ -88,7 +88,7 @@ const userController = {
         const learingHours = topLearners.map(learner => ({
           ...learner,
           // 將分鐘轉換成小時為單位
-          totalDurationHours: (learner.totalDuration / 60).toFixed(1)
+          totalDurationHours: (learner.totalDuration / 60).toString()
         }))
 
         // 按學習時長降冪排序
@@ -401,7 +401,7 @@ const userController = {
       )
 
       const totalDurationMinutes = ranking.find(student => student.userId === userId)?.totalDuration || 0
-      const totalDurationHours = (totalDurationMinutes / 60).toFixed(1)
+      const totalDurationHours = (totalDurationMinutes / 60).toString()
 
       return cb(null, {
         user,
