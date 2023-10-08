@@ -1,37 +1,46 @@
 const { Tutor, Course } = require('../models')
-const dayjs = require('dayjs')
+const { DateTime } = require('luxon')
 
 const courseController = {
   bookCourse: async (req, cb) => {
     try {
-      const tutorId = req.params.id
-      const userId = req.user.id
       const { bookDate } = req.body
 
-      if (!dayjs(bookDate).isValid()) throw new Error('請選擇日期')
+      const dateRegex = /(\d{4}-\d{2}-\d{2})\([^)]+\)\s(\d{2}:\d{2})\s~\s(\d{4}-\d{2}-\d{2})\([^)]+\)\s(\d{2}:\d{2})/
+      const match = bookDate.match(dateRegex)
+
+      if (!bookDate) throw new Error('請選擇日期')
+
       if (req.user.isTutor || req.user.isAdmin) throw new Error('只有學生可以預約課程')
 
-      const [tutor, course] = await Promise.all([
-        Tutor.findByPk(tutorId, { raw: true }),
-        Course.findOne({
-          where: {
-            time: bookDate,
-            tutorId
-          }
-        })
-      ])
+      const tutorId = req.params.id
+      const studentId = req.user.id
 
-      if (tutor.userId === userId) throw new Error('無法預約自己的課程')
-      if (course) throw new Error('此時段已經被預約')
+      const tutor = await Tutor.findByPk(tutorId)
+      if (!tutor) throw new Error('找不到該名老師')
 
-      await Course.create({
-        time: bookDate,
-        tutorId,
-        userId
+      const getTime = `${match[1]} ${match[2]}:00`
+      const startTime = DateTime.fromFormat(getTime, 'yyyy-MM-dd HH:mm:ss', { zone: 'Asia/Taipei' }).toISO()
+
+      const existingCourse = await Course.findOne({
+        where: {
+          tutorId: tutorId,
+          time: startTime
+        }
+      })
+
+      if (existingCourse) throw new Error('該課程已被預約')
+
+      const newCourse = await Course.create({
+        time: startTime,
+        tutorId: tutorId,
+        userId: studentId,
+        isDone: 0
       })
       req.flash('success_messages', '預約成功')
-      return cb(null)
+      return cb(null, { course: newCourse })
     } catch (err) {
+      req.flash('error_messages', '預約失敗')
       cb(err)
     }
   },
