@@ -207,6 +207,9 @@ td {
   justify-content: end;
 }
 
+.header-btn button {
+  padding: 5px 10px;
+}
 
 /* ---------- Modal ---------- */
 

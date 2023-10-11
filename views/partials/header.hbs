@@ -1,7 +1,7 @@
 <header>
   <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light px-4">
     <div class="container-fluid">
-      <div class="d-flex flex-direction-row justify-content-start align-items-center" style="width: 200px;">
+      <div class="d-flex justify-content-start align-items-center" style="width: 200px;">
         <a class="navbar-brand" href="/">
           <img src="/stylesheets/icons/logo.svg" alt="brand-logo" style="height: 40px; width: 40px">
           <strong class="m-2">Tutor</strong>
@@ -12,52 +12,44 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse text-end" id="navbarCollapse">
-        {{#if user}}
-        {{!-- 管理員身份 --}}
-        {{#if user.isAdmin}}
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+          {{#if user}}
+
+          {{!-- 管理者身份 --}}
+          {{#if user.isAdmin}}
           <li class="nav-item">
             <a href="/admin" class="header-nav-link">管理者後台</a>
           </li>
-          <li class="nav-item header-btn">
-            <a href="/logout" class="custom-button my-sm-0 my-2" style="padding: 5px 10px;">登出</a>
-          </li>
-        </ul>
-        {{!-- 老師身份 --}}
-        {{else if user.isTutor}}
-        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+
+          {{!-- 老師身份 --}}
+          {{else if user.isTutor}}
           <li class="nav-item mx-3">
             <a href="/tutor/{{ user.id }}" class="header-nav-link">{{ user.name }}</a>
           </li>
-          <li class="nav-item header-btn">
-            <a href="/logout" class="custom-button my-sm-0 my-2" style="padding: 5px 10px;">登出</a>
-          </li>
-        </ul>
-        {{!-- 一般使用者身份 --}}
-        {{else}}
-        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+
+          {{!-- 學生身份 --}}
+          {{else}}
           <li class="nav-item">
             <a href="/users/{{ user.id }}" class="header-nav-link">{{ user.name }}</a>
           </li>
           <li class="nav-item">
             <a href="/users/{{ user.id }}/apply" class="header-nav-link">成為老師</a>
           </li>
+          {{/if}}
           <li class="nav-item header-btn">
-            <a href="/logout" class="custom-button my-sm-0 my-2" style="padding: 5px 10px;">登出</a>
+            <a href="/logout" class="custom-button my-sm-0 my-2">登出</a>
           </li>
+
+          {{!-- 未登入 --}}
+          {{else}}
+          <li class="nav-item header-btn">
+            <a href="/signin"><button class="custom-button m-2">登入</button></a>
+          </li>
+          <li class="nav-item header-btn">
+            <a href="/signup"><button class="custom-solid-button m-2">註冊</button></a>
+          </li>
+          {{/if}}
         </ul>
-        {{/if}}
-        {{else}}
-        {{!-- 未登入用戶 --}}
-        <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item header-btn">
-            <a href="/signin"><button class="custom-button m-2" style="padding: 5px 10px;">登入</button></a>
-          </li>
-          <li class="nav-item header-btn">
-            <a href="/signup"><button class="custom-solid-button m-2" style="padding: 5px 10px;">註冊</button></a>
-          </li>
-        </ul>
-        {{/if}}
       </div>
     </div>
   </nav>
