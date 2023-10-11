@@ -339,9 +339,21 @@ const userController = {
   },
   getProfile: async (req, cb) => {
     const userId = req.user.id
-    if (userId !== Number(req.params.id)) throw new Error('無法查看其他使用者頁面')
+    const targetUserId = Number(req.params.id)
 
-    if (req.user.isAdmin) throw new Error('管理員無個人頁面')
+    if (userId !== targetUserId) {
+      return cb({
+        error: '無法查看其他使用者頁面',
+        redirect: '/'
+      })
+    }
+
+    if (req.user.isAdmin) {
+      return cb({
+        error: '管理員無個人頁面',
+        redirect: '/'
+      })
+    }
 
     try {
       const user = await User.findByPk(userId, {
