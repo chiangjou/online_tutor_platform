@@ -11,25 +11,28 @@ const userController = {
   signUp: async (req, cb) => {
     try {
       const { name, email, password, passwordCheck } = req.body
+      // 檢查必填欄位
       if (!name || !email || !password || !passwordCheck) {
         throw new Error('所有欄位皆為必填')
       }
+      // 檢查密碼
       if (password !== passwordCheck) {
         throw new Error('密碼不相符，請再次確認密碼')
       }
+      // 檢查 Email
       if (!email.includes('@')) {
         throw new Error('Email 格式錯誤，應包含「@」符號')
       }
-
+      // 檢查重複 Email
       const existingUser = await User.findOne({
         where: { email }
       })
       if (existingUser) {
         throw new Error('此 Email 已被註冊')
       }
-
+      // 密碼雜湊
       const hash = await bcrypt.hash(password, 10)
-
+      // 創建新用戶
       await User.create({
         name,
         email,
@@ -37,8 +40,6 @@ const userController = {
         isAdmin: 0,
         isTutor: 0
       })
-
-      req.flash('success_messages', '成功註冊帳號')
       return cb(null)
     } catch (err) {
       cb(err)

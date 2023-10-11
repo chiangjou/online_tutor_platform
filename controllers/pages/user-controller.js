@@ -1,23 +1,26 @@
 const userServices = require('../../services/user-services')
 
+function redirectWithMessage(req, res, url, message) {
+  req.flash('success_messages', message)
+  res.redirect(url)
+}
+
 const userController = {
   signUpPage: (req, res) => {
     res.render('signup')
   },
   signUp: (req, res, next) => {
-    userServices.signUp(req, (err, data) => err ? next(err) : res.redirect('/signin'))
+    userServices.signUp(req, (err, data) => err ? next(err) : redirectWithMessage(req, res, '/signin', '成功註冊帳號'))
   },
   signInPage: (req, res) => {
     res.render('signin')
   },
   signIn: (req, res) => {
-    req.flash('success_messages', '成功登入')
-    res.redirect('/tutors')
+    redirectWithMessage(req, res, '/tutors', '成功登入')
   },
   logout: (req, res) => {
-    req.flash('success_messages', '成功登出')
+    redirectWithMessage(req, res, '/signin', '成功登出')
     req.logout()
-    res.redirect('/signin')
   },
   getTutors: (req, res, next) => {
     userServices.getTutors(req, (err, data) => err ? next(err) : res.render('tutors', data))
