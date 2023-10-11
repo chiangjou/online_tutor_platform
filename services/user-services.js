@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs')
 const { User, Tutor, Course, sequelize } = require('../models')
+const { Op } = require('sequelize')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 const { localFileHandler } = require('../helpers/file-helpers')
 const dayjs = require('dayjs')
@@ -299,11 +300,20 @@ const userController = {
             attributes: ['name', 'avatar', 'nation']
           }
         ],
-        where: sequelize.where(
-          sequelize.fn('LOWER', sequelize.col('User.name')),
-          'LIKE',
-          `%${keyword.toLowerCase()}%`
-        ),
+        where: {
+          [Op.or]: [
+            sequelize.where(
+              sequelize.fn('LOWER', sequelize.col('User.name')),
+              'LIKE',
+              `%${keyword.toLowerCase()}%`
+            ),
+            sequelize.where(
+              sequelize.fn('LOWER', sequelize.col('User.nation')),
+              'LIKE',
+              `%${keyword.toLowerCase()}%`
+            )
+          ]
+        },
         limit,
         offset
       })
