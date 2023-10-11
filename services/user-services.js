@@ -290,7 +290,7 @@ const userController = {
       })
 
       // 搜尋老師
-      const tutors = await Tutor.findAll({
+      const tutors = await Tutor.findAndCountAll({
         raw: true,
         nest: true,
         include: [
@@ -299,35 +299,29 @@ const userController = {
             attributes: ['name', 'avatar', 'nation']
           }
         ],
+        where: sequelize.where(
+          sequelize.fn('LOWER', sequelize.col('User.name')),
+          'LIKE',
+          `%${keyword.toLowerCase()}%`
+        ),
         limit,
         offset
       })
 
-      const tutorsLowerCase = tutors.map(tutor => {
-        return {
-          ...tutor,
-          name: tutor.User.name.toLowerCase(),
-          nation: tutor.User.nation.toLowerCase(),
-          tutorIntroduction: tutor.tutorIntroduction.toLowerCase(),
-          teachingStyle: tutor.teachingStyle.toLowerCase()
-        }
-      })
-
-      const searchedTutors = tutorsLowerCase.filter(tutor => {
-        return (
-          tutor.name.includes(keyword) || tutor.nation.includes(keyword) || tutor.tutorIntroduction.includes(keyword) || tutor.teachingStyle.includes(keyword)
-        )
-      })
-
-      if (searchedTutors.length === 0) {
+      if (tutors.rows.length === 0) {
         throw new Error(`沒有符合關鍵字「${keyword}」的老師`)
       }
+
+      const searchedTutors = tutors.rows.map(tutor => ({
+        ...tutor,
+        tutorIntroduction: tutor.tutorIntroduction
+      }))
 
       return cb(null, {
         tutors: searchedTutors,
         keyword,
         topLearners,
-        pagination: getPagination(limit, page, searchedTutors.length)
+        pagination: getPagination(limit, page, tutors.count)
       })
     } catch (err) {
       cb(err)
