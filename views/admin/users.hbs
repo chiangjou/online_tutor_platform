@@ -29,7 +29,7 @@
       <th scope="row">{{this.id}}</th>
       <td>
         <!-- Button trigger modal -->
-        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#userInfo{{this.id}}">
+        <button type="button" class="btn btn-link admin-list-link" data-bs-toggle="modal" data-bs-target="#userInfo{{this.id}}">
           {{this.name}}
         </button>
       </td>
@@ -53,8 +53,9 @@
             <div>
               <ul class="admin-modal-list" style="list-style-type: none;">
                 <li><strong>名字：</strong>{{this.name}}</li>
-                <li><strong>E-mail：</strong>{{this.email}}</li>
+                <li><strong>身份：</strong>{{#if this.isTutor}}老師{{else}}學生{{/if}}</li>
                 <li><strong>國家：</strong>{{this.nation}}</li>
+                <li><strong>E-mail：</strong>{{this.email}}</li>
                 <li><strong>加入時間：</strong>{{this.createdAt}}</li>
               </ul>
             </div>
