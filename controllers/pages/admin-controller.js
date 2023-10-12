@@ -1,14 +1,34 @@
 const adminServices = require('../../services/admin-services')
+const { Tutor } = require('../../models')
+const { getUserList } = require('../../services/helpers')
+const { Op } = require('sequelize')
 
 const adminController = {
   getUsers: (req, res, next) => {
-    adminServices.getUsers(req, (err, data) => err ? next(err) : res.render('admin/users', data))
+    const where = { isAdmin: 0 }
+    getUserList(req, where, null, (err, data) => err ? next(err) : res.render('admin/users', data))
   },
   getStudents: (req, res, next) => {
-    adminServices.getStudents(req, (err, data) => err ? next(err) : res.render('admin/students', data))
+    const where = {
+      [Op.and]: [
+        { isAdmin: 0 },
+        { isTutor: 0 }
+      ]
+    }
+    getUserList(req, where, null, (err, data) => err ? next(err) : res.render('admin/students', data))
   },
   getTutors: (req, res, next) => {
-    adminServices.getTutors(req, (err, data) => err ? next(err) : res.render('admin/tutors', data))
+    const where = {
+      [Op.and]: [
+        { isAdmin: 0 },
+        { isTutor: 1 }
+      ]
+    }
+    const include = {
+      model: Tutor,
+      attributes: ['id', 'tutorIntroduction', 'teachingStyle']
+    }
+    getUserList(req, where, include, (err, data) => err ? next(err) : res.render('admin/tutors', data))
   },
   searchUsers: (req, res, next) => {
     adminServices.searchUsers(req, (err, data) => err ? next(err) : res.render('admin/users', data))

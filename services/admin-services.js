@@ -1,101 +1,35 @@
 const { User, Tutor } = require('../models')
 const { Op } = require('sequelize')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const { getUserList } = require('../services/helpers')
 const dayjs = require('dayjs')
 
 const adminController = {
   getUsers: (req, cb) => {
-    const DEFAULT_LIMIT = 10
-    const page = Number(req.query.page) || 1
-    const limit = Number(req.query.limit) || DEFAULT_LIMIT
-    const offset = getOffset(limit, page)
-
-    return User.findAndCountAll({
-      raw: true,
-      nest: true,
-      attributes: { exclude: ['password'] },
-      where: { isAdmin: 0 },
-      limit,
-      offset
-    })
-      .then(users => {
-        const data = users.rows.map(user => ({
-          ...user,
-          createdAt: dayjs(user.createdAt).format('YYYY-MM-DD')
-        }))
-
-        return cb(null, {
-          data,
-          pagination: getPagination(limit, page, users.count)
-        })
-      })
-      .catch(err => cb(err))
+    const where = { isAdmin: 0 }
+    getUserList(req, where, null, cb)
   },
   getStudents: (req, cb) => {
-    const DEFAULT_LIMIT = 10
-    const page = Number(req.query.page) || 1
-    const limit = Number(req.query.limit) || DEFAULT_LIMIT
-    const offset = getOffset(limit, page)
-
-    return User.findAndCountAll({
-      raw: true,
-      nest: true,
-      attributes: { exclude: ['password'] },
-      where: {
-        [Op.and]: [
-          { isAdmin: 0 },
-          { isTutor: 0 }
-        ]
-      },
-      limit,
-      offset
-    })
-      .then(users => {
-        const data = users.rows.map(user => ({
-          ...user,
-          createdAt: dayjs(user.createdAt).format('YYYY-MM-DD')
-        }))
-        return cb(null, {
-          data,
-          pagination: getPagination(limit, page, users.count)
-        })
-      })
-      .catch(err => cb(err))
+    const where = {
+      [Op.and]: [
+        { isAdmin: 0 },
+        { isTutor: 0 }
+      ]
+    }
+    getUserList(req, where, null, cb)
   },
   getTutors: (req, cb) => {
-    const DEFAULT_LIMIT = 10
-    const page = Number(req.query.page) || 1
-    const limit = Number(req.query.limit) || DEFAULT_LIMIT
-    const offset = getOffset(limit, page)
-
-    return User.findAndCountAll({
-      raw: true,
-      nest: true,
-      attributes: { exclude: ['password'] },
-      where: {
-        [Op.and]: [
-          { isAdmin: 0 },
-          { isTutor: 1 }
-        ]
-      },
-      include: {
-        model: Tutor,
-        attributes: ['id', 'tutorIntroduction', 'teachingStyle']
-      },
-      limit,
-      offset
-    })
-      .then(users => {
-        const data = users.rows.map(user => ({
-          ...user,
-          createdAt: dayjs(user.createdAt).format('YYYY-MM-DD')
-        }))
-        return cb(null, {
-          data,
-          pagination: getPagination(limit, page, users.count)
-        })
-      })
-      .catch(err => cb(err))
+    const where = {
+      [Op.and]: [
+        { isAdmin: 0 },
+        { isTutor: 1 }
+      ]
+    }
+    const include = {
+      model: Tutor,
+      attributes: ['id', 'tutorIntroduction', 'teachingStyle']
+    }
+    getUserList(req, where, include, cb)
   },
   searchUsers: (req, cb) => {
     const keyword = req.query.keyword.trim()

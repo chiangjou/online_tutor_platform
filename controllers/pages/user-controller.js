@@ -1,6 +1,6 @@
 const userServices = require('../../services/user-services')
 
-function redirectWithMessage(req, res, url, message) {
+function redirectWithMessage (req, res, url, message) {
   req.flash('success_messages', message)
   res.redirect(url)
 }
