@@ -2,17 +2,7 @@
   {{!-- 左側老師列表 --}}
   <div class="col-md-9">
     {{!-- 搜尋框 --}}
-    <div class="row" id="search-bar">
-      <form action="/tutors/search" method="GET">
-        <div class="input-group mb-3">
-          <input type="search" name="keyword" class="form-control me-2" placeholder="搜尋老師名字或國籍"
-            aria-label="keyword" aria-describedby="search-button" value="{{keyword}}">
-          <div class="input-group-append">
-            <button class="custom-solid-button mx-2" type="submit" id="search-button">搜尋</button>
-          </div>
-        </div>
-      </form>
-    </div>
+    {{> search-bar url="/tutors/search" placeholder="搜尋老師名字或國家" keyword=keyword}}
 
     {{!-- 老師列表 --}}
     <div class="row my-5" style="margin-right: 10px;">
