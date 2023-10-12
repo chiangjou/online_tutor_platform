@@ -26,8 +26,8 @@ const tutorController = {
       })
 
       // 平均評價分數
-      let avgRating = 0
       const ratings = courses.map(courseItem => courseItem.rating).filter(rating => rating !== null)
+      let avgRating = 0
       if (ratings.length > 0) {
         const totalRating = ratings.reduce((a, b) => a + b, 0)
         avgRating = (totalRating / ratings.length).toFixed(1)
@@ -66,34 +66,35 @@ const tutorController = {
       cb(err)
     }
   },
-  editProfile: (req, cb) => {
-    const userId = req.user.id
-    if (userId !== Number(req.params.id)) throw new Error('無法查看他人頁面')
+  editProfile: async (req, cb) => {
+    let weekdays
+    try {
+      const userId = req.user.id
+      if (userId !== Number(req.params.id)) throw new Error('無法查看他人頁面')
 
-    Tutor.findOne({ where: { userId }, raw: true })
-      .then(tutor => {
-        if (!tutor) throw new Error('無該名老師')
-        if (tutor.teachingTime) {
-          tutor.teachingTime = JSON.parse(tutor.teachingTime)
-          const weekdays = [
-            { value: '1', label: '星期一', checked: tutor.teachingTime.includes('1') },
-            { value: '2', label: '星期二', checked: tutor.teachingTime.includes('2') },
-            { value: '3', label: '星期三', checked: tutor.teachingTime.includes('3') },
-            { value: '4', label: '星期四', checked: tutor.teachingTime.includes('4') },
-            { value: '5', label: '星期五', checked: tutor.teachingTime.includes('5') },
-            { value: '6', label: '星期六', checked: tutor.teachingTime.includes('6') },
-            { value: '7', label: '星期日', checked: tutor.teachingTime.includes('7') }
-          ]
-          return cb(null, {
-            tutor,
-            weekdays
-          })
-        }
-        return cb(null, {
-          tutor
-        })
+      const tutor = await Tutor.findOne({ where: { userId }, raw: true })
+
+      if (!tutor) throw new Error('無該名老師')
+
+      if (tutor.teachingTime) {
+        tutor.teachingTime = JSON.parse(tutor.teachingTime)
+        weekdays = [
+          { value: '1', label: '星期一', checked: tutor.teachingTime.includes('1') },
+          { value: '2', label: '星期二', checked: tutor.teachingTime.includes('2') },
+          { value: '3', label: '星期三', checked: tutor.teachingTime.includes('3') },
+          { value: '4', label: '星期四', checked: tutor.teachingTime.includes('4') },
+          { value: '5', label: '星期五', checked: tutor.teachingTime.includes('5') },
+          { value: '6', label: '星期六', checked: tutor.teachingTime.includes('6') },
+          { value: '7', label: '星期日', checked: tutor.teachingTime.includes('7') }
+        ]
+      }
+      return cb(null, {
+        tutor,
+        weekdays
       })
-      .catch(err => cb(err))
+    } catch (err) {
+      cb(err)
+    }
   },
   putProfile: async (req, cb) => {
     const { name, nation, tutorIntroduction, teachingStyle, duration, teachingLink } = req.body
