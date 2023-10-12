@@ -1,6 +1,6 @@
 const adminServices = require('../../services/admin-services')
 const { Tutor } = require('../../models')
-const { getUserList } = require('../../services/helpers')
+const { getUserList } = require('../../services/helpers/admin-helpers')
 const { Op } = require('sequelize')
 
 const adminController = {
@@ -31,13 +31,13 @@ const adminController = {
     getUserList(req, where, include, (err, data) => err ? next(err) : res.render('admin/tutors', data))
   },
   searchUsers: (req, res, next) => {
-    adminServices.searchUsers(req, (err, data) => err ? next(err) : res.render('admin/users', data))
+    adminServices.searchUsers(req, (err, data) => (err ? next(err) : res.render('admin/users', data)))
   },
   searchStudents: (req, res, next) => {
-    adminServices.searchStudents(req, (err, data) => err ? next(err) : res.render('admin/students', data))
+    adminServices.searchStudents(req, (err, data) => (err ? next(err) : res.render('admin/students', data)))
   },
   searchTutors: (req, res, next) => {
-    adminServices.searchTutors(req, (err, data) => err ? next(err) : res.render('admin/tutors', data))
+    adminServices.searchTutors(req, (err, data) => (err ? next(err) : res.render('admin/tutors', data)))
   }
 }
 
