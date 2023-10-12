@@ -1,12 +1,17 @@
-const selectElement = document.getElementById('bookDate')
-const bookedDateElement = document.getElementById('booked-date')
-const confirmButton = document.getElementById('confirm-button')
+const selectDateElement = document.getElementById('selectDate')
+const bookedDateElement = document.getElementById('bookDate')
+const confirmBookingBtn = document.getElementById('confirm-booking-btn')
+const bookingForm = document.getElementById('booking-form')
 
-selectElement.addEventListener('change', function () {
-  const selectedDate = this.value
+function updateBookedDate () {
+  const selectedDate = selectDateElement.value
   bookedDateElement.textContent = `時間：${selectedDate}`
-})
+}
 
-confirmButton.addEventListener('click', function () {
+function bookingConfirmation () {
+  bookingForm.submit()
   location.reload()
-})
+}
+
+selectDateElement.addEventListener('change', updateBookedDate)
+confirmBookingBtn.addEventListener('click', bookingConfirmation)

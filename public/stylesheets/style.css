@@ -260,6 +260,20 @@ td {
 }
 
 
+/* ---------- Booking ---------- */
+
+.booking-form {
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.booking-btn {
+  padding: 8px 12px;
+  font-size: 15px;
+}
+
+
 /* ---------- Messages ---------- */
 
 .msg-container {

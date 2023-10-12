@@ -62,28 +62,19 @@
 
   {{!-- 右側預約課程 --}}
   <div class="col-md-4">
-    {{#if (or (not req.user.isAdmin) (not req.user.isTutor))}}
-    <form action="/tutors/{{tutor.id}}/booking" method="POST">
+    <form action="/tutors/{{tutor.id}}/booking" method="POST" id="booking-form">
       <h4 class="mb-3">預約上課</h4>
-      <select name="bookDate" id="bookDate" class="form-control mb-3" style="font-size: 15px; padding: 8px">
+      <select name="selectDate" id="selectDate" class="form-control booking-form">
         <option value="">選擇時間</option>
         {{#each unbookedCourses}}
-        <option id="selected-date" value="{{this.formattedTime}}">{{this.formattedTime}}</option>
+        <option value="{{this.formattedTime}}">{{this.formattedTime}}</option>
         {{/each}}
       </select>
-
-      <!-- Button trigger modal -->
       <div class="d-flex justify-content-end">
-        <button type="submit" class="custom-solid-button" style="font-size: 15px; padding: 8px 12px"
-          data-bs-toggle="modal" data-bs-target="#book-course-model">
-          預約
-        </button>
+        <button type="button" class="custom-solid-button booking-btn" data-bs-toggle="modal" data-bs-target="#book-course-model">預約</button>
       </div>
       {{> booking-modal}}
     </form>
-    {{else}}
-    <p>非學生身份無法預約課程</p>
-    {{/if}}
   </div>
 </div>
 
