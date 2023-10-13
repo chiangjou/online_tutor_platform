@@ -45,85 +45,84 @@ const userController = {
       cb(err)
     }
   },
-  getTutors: (req, cb) => {
-    const DEFAULT_LIMIT = 6
-    const page = Number(req.query.page) || 1
-    const limit = Number(req.query.limit) || DEFAULT_LIMIT
-    const offset = getOffset(limit, page)
+  getTutors: async (req, cb) => {
+    try {
+      const DEFAULT_LIMIT = 6
+      const page = Number(req.query.page) || 1
+      const limit = Number(req.query.limit) || DEFAULT_LIMIT
+      const offset = getOffset(limit, page)
 
-    const tutorsPromise = Tutor.findAndCountAll({
-      nest: true,
-      raw: true,
-      include: [
-        {
-          model: User,
-          attributes: ['name', 'avatar', 'nation']
-        }
-      ],
-      limit,
-      offset
-    })
-
-    // 學習時數前十名的學生
-    const topLearnersPromise = Course.findAll({
-      raw: true,
-      nest: true,
-      where: {
-        isDone: true
-      },
-      attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
-      group: ['userId'],
-      order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
-      limit: 10,
-      include: [
-        {
-          model: User,
-          attributes: ['name', 'avatar'],
-          where: {
-            isAdmin: false,
-            isTutor: false
+      const tutorsPromise = await Tutor.findAndCountAll({
+        nest: true,
+        raw: true,
+        include: [
+          {
+            model: User,
+            attributes: ['name', 'avatar', 'nation']
           }
-        }
-      ]
-    })
-      .then(topLearners => {
-        const learingHours = topLearners.map(learner => ({
-          ...learner,
-          // 將分鐘轉換成小時為單位
-          totalDurationHours: (learner.totalDuration / 60).toString()
-        }))
-
-        // 按學習時長降冪排序
-        learingHours.sort((a, b) => b.totalDuration - a.totalDuration)
-
-        // 初始化排名
-        let currentRanking = 1
-        learingHours[0].ranking = currentRanking
-
-        // 處理同時數同名
-        for (let i = 1; i < learingHours.length; i++) {
-          if (learingHours[i].totalDuration === learingHours[i - 1].totalDuration) {
-            // 如果學習時數相同為同一名次
-            learingHours[i].ranking = currentRanking
-          } else {
-            // 否則增加排名
-            currentRanking++
-            learingHours[i].ranking = currentRanking
-          }
-        }
-
-        return learingHours
+        ],
+        limit,
+        offset
       })
 
-    Promise.all([tutorsPromise, topLearnersPromise])
-      .then(([tutors, topLearners]) => {
-        return cb(null, {
-          tutors: tutors.rows,
-          topLearners,
-          pagination: getPagination(limit, page, tutors.count)
-        })
+      // 學習時數前十名的學生
+      const topLearners = await Course.findAll({
+        raw: true,
+        nest: true,
+        where: {
+          isDone: true
+        },
+        attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
+        group: ['userId'],
+        order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
+        limit: 10,
+        include: [
+          {
+            model: User,
+            attributes: ['name', 'avatar'],
+            where: {
+              isAdmin: false,
+              isTutor: false
+            }
+          }
+        ]
       })
-      .catch(err => cb(err))
+
+      const learingHours = topLearners.map(learner => ({
+        ...learner,
+        // 將分鐘轉換成小時為單位
+        totalDurationHours: (learner.totalDuration / 60).toString()
+      }))
+
+      // 按學習時長降冪排序
+      learingHours.sort((a, b) => b.totalDuration - a.totalDuration)
+
+      // 初始化排名
+      let currentRanking = 1
+      learingHours[0].ranking = currentRanking
+
+      // 處理同時數同名
+      for (let i = 1; i < learingHours.length; i++) {
+        if (learingHours[i].totalDuration === learingHours[i - 1].totalDuration) {
+          // 如果學習時數相同為同一名次
+          learingHours[i].ranking = currentRanking
+        } else {
+          // 否則增加排名
+          currentRanking++
+          learingHours[i].ranking = currentRanking
+        }
+      }
+
+      const [tutors, _] = await Promise.all([tutorsPromise, topLearners])
+
+      cb(null, {
+        tutors: tutors.rows,
+        topLearners: learingHours,
+        pagination: getPagination(limit, page, tutors.count)
+      })
+    } catch (err) {
+      cb(err)
+    }
   },
   getTutor: async (req, cb) => {
     try {
