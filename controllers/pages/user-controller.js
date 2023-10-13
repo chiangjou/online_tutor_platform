@@ -19,8 +19,8 @@ const userController = {
     redirectWithMessage(req, res, '/tutors', '成功登入')
   },
   logout: (req, res) => {
-    redirectWithMessage(req, res, '/signin', '成功登出')
     req.logout()
+    redirectWithMessage(req, res, '/signin', '成功登出')
   },
   getTutors: (req, res, next) => {
     userServices.getTutors(req, (err, data) => err ? next(err) : res.render('tutors', data))
