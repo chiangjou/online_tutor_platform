@@ -103,7 +103,7 @@ const tutorController = {
     const { file } = req
     const requiredData = {
       name: '名字',
-      nation: '國籍',
+      nation: '國家',
       tutorIntroduction: '關於我',
       teachingStyle: '教學風格',
       teachingLink: '課程連結'

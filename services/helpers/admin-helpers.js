@@ -89,7 +89,7 @@ const searchUsers = async (req, isAdmin, isTutor, cb) => {
 
     cb(null, {
       data: searchedUsers,
-      pagination: getPagination(limit, page, users.count),
+      pagination: getPagination(limit, page, searchedUsers.length),
       keyword
     })
   } catch (err) {

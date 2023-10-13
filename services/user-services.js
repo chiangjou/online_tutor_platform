@@ -311,7 +311,7 @@ const userController = {
         tutors: searchedTutors,
         keyword,
         topLearners,
-        pagination: getPagination(limit, page, tutors.count)
+        pagination: getPagination(limit, page, searchedTutors.length)
       })
     } catch (err) {
       cb(err)
@@ -497,7 +497,7 @@ const userController = {
     const { file } = req
     const requiredData = {
       name: '姓名',
-      nation: '國籍',
+      nation: '國家',
       tutorIntroduction: '關於我',
       teachingStyle: '教學風格',
       teachingLink: '課程視訊連結'
