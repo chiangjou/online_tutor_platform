@@ -38,8 +38,8 @@ const courseController = {
       })
 
       req.flash('success_messages', '預約成功')
-      return cb(null, { 
-        course: newCourse 
+      return cb(null, {
+        course: newCourse
       })
     } catch (err) {
       cb(err)

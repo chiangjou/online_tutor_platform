@@ -7,6 +7,52 @@ const dayjs = require('dayjs')
 const localeZhCn = require('dayjs/locale/zh-cn')
 dayjs.locale(localeZhCn)
 
+// 取得學習時數前十名的學生
+const getTopLearners = async () => {
+  const topLearners = await Course.findAll({
+    raw: true,
+    nest: true,
+    where: {
+      isDone: true
+    },
+    attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
+    group: ['userId'],
+    order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
+    limit: 10,
+    include: [
+      {
+        model: User,
+        attributes: ['name', 'avatar'],
+        where: {
+          isAdmin: false,
+          isTutor: false
+        }
+      }
+    ]
+  })
+
+  const learningHours = topLearners.map(learner => ({
+    ...learner,
+    totalDurationHours: (learner.totalDuration / 60).toString()
+  }))
+
+  learningHours.sort((a, b) => b.totalDuration - a.totalDuration)
+
+  let currentRanking = 1
+  learningHours[0].ranking = currentRanking
+
+  for (let i = 1; i < learningHours.length; i++) {
+    if (learningHours[i].totalDuration === learningHours[i - 1].totalDuration) {
+      learningHours[i].ranking = currentRanking
+    } else {
+      currentRanking++
+      learningHours[i].ranking = currentRanking
+    }
+  }
+
+  return learningHours
+}
+
 const userController = {
   signUp: async (req, cb) => {
     try {
@@ -52,7 +98,7 @@ const userController = {
       const limit = Number(req.query.limit) || DEFAULT_LIMIT
       const offset = getOffset(limit, page)
 
-      const tutorsPromise = await Tutor.findAndCountAll({
+      const tutors = await Tutor.findAndCountAll({
         nest: true,
         raw: true,
         include: [
@@ -65,59 +111,11 @@ const userController = {
         offset
       })
 
-      // 學習時數前十名的學生
-      const topLearners = await Course.findAll({
-        raw: true,
-        nest: true,
-        where: {
-          isDone: true
-        },
-        attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
-        group: ['userId'],
-        order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
-        limit: 10,
-        include: [
-          {
-            model: User,
-            attributes: ['name', 'avatar'],
-            where: {
-              isAdmin: false,
-              isTutor: false
-            }
-          }
-        ]
-      })
-
-      const learingHours = topLearners.map(learner => ({
-        ...learner,
-        // 將分鐘轉換成小時為單位
-        totalDurationHours: (learner.totalDuration / 60).toString()
-      }))
-
-      // 按學習時長降冪排序
-      learingHours.sort((a, b) => b.totalDuration - a.totalDuration)
-
-      // 初始化排名
-      let currentRanking = 1
-      learingHours[0].ranking = currentRanking
-
-      // 處理同時數同名
-      for (let i = 1; i < learingHours.length; i++) {
-        if (learingHours[i].totalDuration === learingHours[i - 1].totalDuration) {
-          // 如果學習時數相同為同一名次
-          learingHours[i].ranking = currentRanking
-        } else {
-          // 否則增加排名
-          currentRanking++
-          learingHours[i].ranking = currentRanking
-        }
-      }
-
-      const [tutors, _] = await Promise.all([tutorsPromise, topLearners])
+      const topLearners = await getTopLearners()
 
       cb(null, {
         tutors: tutors.rows,
-        topLearners: learingHours,
+        topLearners,
         pagination: getPagination(limit, page, tutors.count)
       })
     } catch (err) {
@@ -270,26 +268,6 @@ const userController = {
       const limit = Number(req.query.limit) || DEFAULT_LIMIT
       const offset = getOffset(limit, page)
 
-      // 學習時數前十名的學生
-      const topLearners = await Course.findAll({
-        raw: true,
-        nest: true,
-        where: { isDone: true },
-        attributes: ['userId', [sequelize.fn('SUM', sequelize.col('duration')), 'totalDuration']],
-        group: ['userId'],
-        order: [[sequelize.fn('SUM', sequelize.col('duration')), 'DESC']],
-        limit: 10,
-        include: [
-          {
-            model: User,
-            attributes: ['name', 'avatar'],
-            where: {
-              isAdmin: false
-            }
-          }
-        ]
-      })
-
       // 搜尋老師
       const tutors = await Tutor.findAndCountAll({
         raw: true,
@@ -326,6 +304,8 @@ const userController = {
         ...tutor,
         tutorIntroduction: tutor.tutorIntroduction
       }))
+
+      const topLearners = await getTopLearners()
 
       return cb(null, {
         tutors: searchedTutors,

@@ -30,7 +30,7 @@ function getRandomTime (teachingTime, bookedCourses, isPast, tutorId) {
   const formattedRandomTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
 
   // 檢查是否符合老師的 teaching time、課程是否被預約、老師不能預約自己的課程
-  if (teachingTime.includes(selectedDayOfWeek.toString()) && 
+  if (teachingTime.includes(selectedDayOfWeek.toString()) &&
   !bookedCourses.includes(formattedRandomTime) &&
   tutorId !== bookedCourses[tutorId]
   ) {
