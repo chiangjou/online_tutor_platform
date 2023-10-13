@@ -3,14 +3,14 @@ const faker = require('faker')
 const { DateTime } = require('luxon')
 
 // 生成隨機時間加進 bookedCourses
-function generateRandomTime (teachingTime, bookedCourses, isPast) {
-  const randomTime = getRandomTime(teachingTime, bookedCourses, isPast)
+function generateRandomTime (teachingTime, bookedCourses, isPast, tutorId) {
+  const randomTime = getRandomTime(teachingTime, bookedCourses, isPast, tutorId)
   bookedCourses.push(randomTime)
   return randomTime
 }
 
 // 生成隨機時間
-function getRandomTime (teachingTime, bookedCourses, isPast) {
+function getRandomTime (teachingTime, bookedCourses, isPast, tutorId) {
   const now = DateTime.now().setZone('Asia/Taipei')
   // 過去一年時間
   const minDate = isPast ? now.minus({ years: 1 }).toJSDate() : now.toJSDate()
@@ -29,18 +29,21 @@ function getRandomTime (teachingTime, bookedCourses, isPast) {
   const selectedDayOfWeek = formattedTime.weekday
   const formattedRandomTime = formattedTime.toFormat('yyyy-MM-dd HH:mm:ss')
 
-  // 檢查是否符合老師的 teaching time 及課程是否被預約
-  if (teachingTime.includes(selectedDayOfWeek.toString()) && !bookedCourses.includes(formattedRandomTime)) {
+  // 檢查是否符合老師的 teaching time、課程是否被預約、老師不能預約自己的課程
+  if (teachingTime.includes(selectedDayOfWeek.toString()) && 
+  !bookedCourses.includes(formattedRandomTime) &&
+  tutorId !== bookedCourses[tutorId]
+  ) {
     return formattedRandomTime
   } else {
-    return getRandomTime(teachingTime, bookedCourses, isPast)
+    return getRandomTime(teachingTime, bookedCourses, isPast, tutorId)
   }
 }
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     try {
-      const users = await queryInterface.sequelize.query('SELECT id from Users;')
+      const users = await queryInterface.sequelize.query('SELECT id from Users WHERE name NOT IN ("root");')
       const tutors = await queryInterface.sequelize.query('SELECT id, duration, teaching_time from Tutors;')
       const courses = []
       const maxCommentLength = 100
@@ -56,7 +59,7 @@ module.exports = {
             bookedCourses[selectedTutor.id] = []
           }
 
-          const pastTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], true)
+          const pastTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], true, selectedTutor.id)
 
           courses.push({
             time: pastTime,
@@ -80,7 +83,7 @@ module.exports = {
             bookedCourses[selectedTutor.id] = []
           }
 
-          const pastTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], true)
+          const pastTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], true, selectedTutor.id)
 
           courses.push({
             time: pastTime,
@@ -106,7 +109,7 @@ module.exports = {
             bookedCourses[selectedTutor.id] = []
           }
 
-          const futureTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], false)
+          const futureTime = generateRandomTime(selectedTutor.teaching_time, bookedCourses[selectedTutor.id], false, selectedTutor.id)
 
           courses.push({
             time: futureTime,
@@ -130,7 +133,7 @@ module.exports = {
             bookedCourses[tutor.id] = []
           }
 
-          const pastTime = generateRandomTime(tutor.teaching_time, bookedCourses[tutor.id], true)
+          const pastTime = generateRandomTime(tutor.teaching_time, bookedCourses[tutor.id], true, tutor.id)
 
           courses.push({
             time: pastTime,
@@ -156,7 +159,7 @@ module.exports = {
             bookedCourses[tutor.id] = []
           }
 
-          const futureTime = generateRandomTime(tutor.teaching_time, bookedCourses[tutor.id], false)
+          const futureTime = generateRandomTime(tutor.teaching_time, bookedCourses[tutor.id], false, tutor.id)
 
           courses.push({
             time: futureTime,
