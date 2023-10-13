@@ -39,6 +39,7 @@ router.get('/tutor/:id/edit', authenticated, tutorController.editProfile)
 router.put('/tutor/:id', authenticated, upload.single('avatar'), tutorController.putProfile)
 
 router.post('/tutors/:id/booking', authenticated, courseController.bookCourse)
+router.delete('/courses/:id', authenticated, courseController.deleteCourse)
 router.post('/courses/:id/rating', authenticated, courseController.rateCourse)
 
 router.use('/', (req, res) => res.redirect('/tutors'))

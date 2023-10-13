@@ -38,7 +38,25 @@ const courseController = {
       })
 
       req.flash('success_messages', '預約成功')
-      return cb(null, { course: newCourse })
+      return cb(null, { 
+        course: newCourse 
+      })
+    } catch (err) {
+      cb(err)
+    }
+  },
+  deleteCourse: async (req, cb) => {
+    try {
+      const course = await Course.findByPk(req.params.id)
+
+      if (!course) throw new Error('找不到此課程')
+
+      req.flash('success_messages', '已取消課程')
+
+      const deletedCourse = await course.destroy()
+      cb(null, {
+        course: deletedCourse
+      })
     } catch (err) {
       cb(err)
     }

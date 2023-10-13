@@ -447,7 +447,7 @@ const userController = {
     const { file } = req
     const requiredData = {
       name: '名字',
-      nation: '國籍',
+      nation: '國家',
       introduction: '關於我'
     }
     const missingData = []

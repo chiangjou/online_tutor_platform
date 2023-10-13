@@ -1,6 +1,7 @@
 <div class="row mb-5">
   {{!-- 左側 --}}
   <div class="col-md-4">
+    {{!-- 學生頭像 --}}
     <div class="user-avatar mb-5">
       {{#if user.avatar}}
       <img class="avatar" src="{{user.avatar}}" alt="avatar" title="avatar">
@@ -8,28 +9,31 @@
       <img class="default-avatar" src="/stylesheets/icons/default-avatar.svg" alt="avatar" title="avatar">
       {{/if}}
     </div>
-
+    {{!-- 學生資訊 --}}
     <div class="user-info mb-5">
       <h3>{{user.name}}</h3>
       <p>{{user.nation}}</p>
       <strong>關於我</strong>
-      <p style="white-space: break-spaces;">{{user.introduction}}</p>
+      <p>{{user.introduction}}</p>
     </div>
-
-    <a class="custom-solid-button" href="/users/{{user.id}}/edit" style="text-decoration: none;">編輯個人資料</a>
-    <a class="custom-button mx-2" href="/" style="text-decoration: none;">返回</a>
+    {{!-- 編輯按鈕 --}}
+    <button class="custom-solid-button"><a href="/users/{{user.id}}/edit">
+        編輯個人資料</a></button>
+    {{!-- 返回按鈕 --}}
+    <button class="custom-button mx-2"><a href="/">返回首頁</a></button>
   </div>
 
   {{!-- 右側 --}}
   <div class="col-md-8">
+    {{!-- 未來課程 --}}
     <h4>即將到來</h4>
     <div class="row mb-5">
       {{#each futureCourses}}
-      <div class="col-md-6 col-12" style="height: 100px; margin: 10px 0px">
+      <div class="col-md-6 col-12" id="future-course">
         <div class="card mb-4 shadow-sm h-100" id="course-card">
-
           <div class="d-flex align-items-center m-2">
             <a href="/tutors/{{this.Tutor.id}}">
+              {{!-- 老師頭像 --}}
               <div class="tutor-avatar mb-2">
                 {{#if this.Tutor.User.avatar}}
                 <img class="avatar" src="{{this.Tutor.User.avatar}}" alt="avatar" title="avatar">
@@ -39,32 +43,38 @@
               </div>
             </a>
           </div>
-
+          {{!-- 老師名字 --}}
           <div class="course-info m-2">
             <a href="/tutors/{{this.Tutor.id}}">
-              <span class="tutor-name">
-                <strong>{{this.Tutor.User.name}}</strong>
-              </span>
+              {{this.Tutor.User.name}}
             </a>
+            {{!-- 課程時間 --}}
             <span style="font-size: 14px;">{{this.time}}</span>
           </div>
           <div class="d-flex align-items-center mx-3">
-            <a href="{{this.Tutor.teachingLink}}"><i class="fa-solid fa-right-to-bracket"></i></a>
+            {{!-- 課程連結 --}}
+            <a href="{{this.Tutor.teachingLink}}" title="前往教室"><i class="fa-solid fa-right-to-bracket"></i></a>
+            {{!-- 取消課程 --}}
+            <form action="/courses/{{this.id}}?_method=DELETE" method="POST">
+              <button type="submit" class="btn" onclick="return confirm(`確定要取消這堂課嗎？`)" title="取消課程">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </form>
           </div>
         </div>
       </div>
       {{/each}}
     </div>
     <hr>
-
+    {{!-- 過去課程 --}}
     <h4>歷史課程</h4>
     <div class="row mb-5">
       {{#each pastCourses}}
-      <div class="col-md-6 col-12" style="height: 100px; margin: 10px 0px">
+      <div class="col-md-6 col-12" id="past-course">
         <div class="card mb-4 shadow-sm h-100" id="course-card">
-
           <div class="d-flex align-items-center m-2">
             <a href="/tutors/{{this.Tutor.id}}">
+              {{!-- 老師頭像 --}}
               <div class="tutor-avatar mb-2">
                 {{#if this.Tutor.User.avatar}}
                 <img class="avatar" src="{{this.Tutor.User.avatar}}" alt="avatar" title="avatar">
@@ -74,25 +84,23 @@
               </div>
             </a>
           </div>
-
           <div class="course-info m-2">
+            {{!-- 老師名字 --}}
             <a href="/tutors/{{this.Tutor.id}}">
-              <span class="tutor-name">
-                <strong>{{this.Tutor.User.name}}</strong>
-              </span>
+              {{this.Tutor.User.name}}
             </a>
+            {{!-- 課程時間 --}}
             <span style="font-size: 14px;">{{this.time}}</span>
           </div>
-
+          {{!-- 評分 --}}
           <div class="course-rating d-flex align-items-center mx-3">
             {{#if this.rating}}
             <strong class="tutor-rating badge" style="font-size: 15px;">
               {{this.rating}}</strong>
             {{else}}
-
             <!-- Button trigger modal -->
-            <button type="button" style="background-color: white; border: none"
-              data-bs-toggle="modal" data-bs-target="#ratting-course-{{this.id}}">
+            <button type="button" style="background-color: white; border: none" data-bs-toggle="modal"
+              data-bs-target="#ratting-course-{{this.id}}" title="給予評價">
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
             {{> rating-modal}}
@@ -103,12 +111,15 @@
       {{/each}}
     </div>
     <hr>
-
+    {{!-- 學習時數 --}}
     <h4>我的學習時數</h4>
     <div class="mt-4 d-flex" style="font-size: 18px;">
+      {{!-- 累積時數 --}}
       <div>
         <i class="fa-solid fa-clock mx-1"></i>
-        目前累積 <strong>{{totalDuration}}</strong> 小時</div>
+        目前累積 <strong>{{totalDuration}}</strong> 小時
+      </div>
+      {{!-- 排名 --}}
       <div class="mx-5">
         <i class="fa-solid fa-trophy mx-1" style="color: #e4b02b;"></i>
         {{#if studentRanking}}

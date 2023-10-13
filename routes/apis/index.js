@@ -3,7 +3,7 @@ const router = express.Router()
 const passport = require('../../config/passport')
 const upload = require('../../middleware/multer')
 const { authenticated, authenticatedAdmin } = require('../../middleware/api-auth')
-const { generalErrorHandler } = require('../../middleware/error-handler')
+const { apiErrorHandler } = require('../../middleware/error-handler')
 
 const adminController = require('../../controllers/pages/admin-controller')
 const courseController = require('../../controllers/pages/course-controller')
@@ -39,6 +39,6 @@ router.put('/tutor/:id', authenticated, upload.single('avatar'), tutorController
 router.post('/tutors/:id/booking', authenticated, courseController.bookCourse)
 router.post('/courses/:id/rating', authenticated, courseController.rateCourse)
 
-router.use('/', generalErrorHandler)
+router.use('/', apiErrorHandler)
 
 module.exports = router

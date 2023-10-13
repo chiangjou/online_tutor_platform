@@ -1,3 +1,7 @@
+p {
+  white-space: break-spaces;
+}
+
 i {
   color: #308882;
 }
@@ -15,7 +19,7 @@ i:hover {
   background-color: white;
   border: 2px solid #308882;
   color: #308882;
-  padding: 10px 20px;
+  padding: 8px 12px;
   border-radius: 10px;
   transition: background-color 0.3s;
 }
@@ -41,7 +45,7 @@ i:hover {
   background-color: #308882;
   border: 2px solid #308882;
   color: white;
-  padding: 10px 20px;
+  padding: 8px 12px;
   border-radius: 10px;
   transition: background-color 0.3s;
 }
@@ -119,6 +123,14 @@ i:hover {
 }
 
 
+/* ---------- course card ---------- */
+
+#future-course,
+#past-course {
+  height: 100px;
+  margin: 10px 0px;
+}
+
 #course-card {
   display: flex;
   flex-direction: row;
@@ -127,7 +139,14 @@ i:hover {
 
 #course-card a {
   text-decoration: none;
-  color: black
+  color: black;
+  font-weight: 600;
+}
+
+#course-card a:hover {
+  text-decoration: underline;
+  color: black;
+  font-weight: 600;
 }
 
 #course-card .course-info {
@@ -177,7 +196,7 @@ i:hover {
   color: white;
 }
 
-/* ---------- header ---------- */
+/* ---------- table ---------- */
 
 table {
   border-collapse: collapse;
@@ -331,14 +350,14 @@ td {
   border: 2px solid #FC5A5A;
 }
 
+.btn-error img {
+  filter: brightness(0) saturate(100%) invert(50%) sepia(15%) saturate(4417%) hue-rotate(327deg) brightness(109%) contrast(98%);
+}
+
 .btn-container .btn-success {
   border: 2px solid #3DD598;
 }
 
-.btn-container .btn-warning {
-  border: 2px solid #FFC542;
-}
-
-.btn-container .btn-info {
-  border: 2px solid #50B5FF;
+.btn-success img {
+  filter: brightness(0) saturate(100%) invert(78%) sepia(42%) saturate(658%) hue-rotate(95deg) brightness(88%) contrast(88%);
 }
