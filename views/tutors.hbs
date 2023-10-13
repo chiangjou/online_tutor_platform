@@ -24,6 +24,15 @@
                 <h5>{{this.User.name}}</h5>
                 {{!-- 國籍 --}}
                 <p>{{this.User.nation}}</p>
+                {{!-- 評分 --}}
+                <div>
+                  <i class="fa-solid fa-star" style="color: #e4b02b;"></i>
+                  {{#if avgRating}}
+                  <strong class="course-rating badge">{{avgRating}}</strong>
+                  {{else}}
+                  <strong class="course-rating badge">新老師</strong>
+                  {{/if}}
+                </div>
               </div>
             </div>
             {{!-- 自我介紹 --}}
@@ -69,3 +78,5 @@
     </table>
   </div>
 </div>
+
+<script src="/javascripts/countryFlag.js"></script>

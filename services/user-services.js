@@ -111,6 +111,23 @@ const userController = {
         offset
       })
 
+      for (const tutor of tutors.rows) {
+        const courses = await Course.findAll({
+          where: { tutorId: tutor.id },
+          raw: true
+        });
+
+        const ratings = courses.map(courseData => courseData.rating).filter(rating => rating > 0);
+        let avgRating = 0;
+
+        if (ratings.length > 0) {
+          const totalRating = ratings.reduce((a, b) => a + b, 0);
+          avgRating = (totalRating / ratings.length).toFixed(1);
+        }
+
+        tutor.avgRating = avgRating;
+      }
+      
       const topLearners = await getTopLearners()
 
       cb(null, {
