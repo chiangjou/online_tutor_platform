@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs')
 const { User, Tutor, Course, sequelize } = require('../models')
 const { Op } = require('sequelize')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
-const { localFileHandler } = require('../helpers/file-helpers')
+const { imgurFileHandler } = require('../helpers/file-helpers')
 const dayjs = require('dayjs')
 const localeZhCn = require('dayjs/locale/zh-cn')
 dayjs.locale(localeZhCn)
@@ -115,19 +115,19 @@ const userController = {
         const courses = await Course.findAll({
           where: { tutorId: tutor.id },
           raw: true
-        });
+        })
 
-        const ratings = courses.map(courseData => courseData.rating).filter(rating => rating > 0);
-        let avgRating = 0;
+        const ratings = courses.map(courseData => courseData.rating).filter(rating => rating > 0)
+        let avgRating = 0
 
         if (ratings.length > 0) {
-          const totalRating = ratings.reduce((a, b) => a + b, 0);
-          avgRating = (totalRating / ratings.length).toFixed(1);
+          const totalRating = ratings.reduce((a, b) => a + b, 0)
+          avgRating = (totalRating / ratings.length).toFixed(1)
         }
 
-        tutor.avgRating = avgRating;
+        tutor.avgRating = avgRating
       }
-      
+
       const topLearners = await getTopLearners()
 
       cb(null, {
@@ -464,7 +464,7 @@ const userController = {
             exclude: ['password']
           }
         }),
-        localFileHandler(file)
+        imgurFileHandler(file)
       ])
 
       if (!user) throw new Error('無該名使用者')
@@ -532,7 +532,7 @@ const userController = {
 
       const [user, filePath] = await Promise.all([
         User.findByPk(req.params.id, { attributes: { exclude: ['password'] } }),
-        localFileHandler(file)
+        imgurFileHandler(file)
       ])
 
       if (!user) throw new Error('無該名使用者')

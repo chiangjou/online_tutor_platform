@@ -4,20 +4,13 @@ const faker = require('faker')
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     try {
-      const users = await queryInterface.sequelize.query('SELECT id from Users WHERE name NOT IN ("root", "user1", "user2");')
+      const users = await queryInterface.sequelize.query('SELECT id from Users;')
       // 隨機抽取 user
       const shuffledUsers = users[0].sort(() => 0.5 - Math.random())
-
-      let updatedUser2 = false
 
       await queryInterface.bulkInsert('Tutors',
         Array.from({ length: 30 }).map((d, i) => {
           queryInterface.sequelize.query(`UPDATE Users SET is_tutor = true WHERE id = ${shuffledUsers[i].id}`)
-
-          // 檢查隨機抽取的 user 中是否有 user2
-          if (shuffledUsers[i].name === 'user2') {
-            updatedUser2 = true
-          }
 
           const maxTextLength = 160
           return {
@@ -32,25 +25,6 @@ module.exports = {
           }
         })
       )
-
-      // 如 user2 不在隨機抽取的 user 中，另外更新資料進 Tutors
-      if (!updatedUser2) {
-        const user2 = await queryInterface.sequelize.query('SELECT id FROM Users WHERE name = "user2";')
-        if (user2[0].length > 0) {
-          const user2Id = user2[0][0].id
-          const maxTextLength = 160
-          await queryInterface.bulkInsert('Tutors', [{
-            tutor_introduction: faker.lorem.text().substring(0, maxTextLength),
-            teaching_style: faker.lorem.text().substring(0, maxTextLength),
-            duration: Math.random() < 0.5 ? 30 : 60,
-            teaching_time: JSON.stringify(Array.from({ length: 7 }, (_, i) => (i + 1).toString()).sort(() => 0.5 - Math.random()).slice(0, Math.floor(Math.random() * 7) + 1)),
-            teaching_link: faker.internet.url(),
-            user_id: user2Id,
-            created_at: new Date(),
-            updated_at: new Date()
-          }])
-        }
-      }
 
       console.log('Tutors table seeding completed successfully.')
     } catch (error) {

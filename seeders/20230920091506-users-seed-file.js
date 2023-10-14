@@ -27,18 +27,6 @@ module.exports = {
           is_tutor: 0,
           created_at: new Date(),
           updated_at: new Date()
-        },
-        {
-          name: 'user2',
-          email: 'user2@example.com',
-          password: await bcrypt.hash('12345678', 10),
-          avatar: `https://loremflickr.com/200/200/people/?lock=${Math.random() * 100}`,
-          nation: faker.address.country(),
-          introduction: faker.lorem.text().substring(0, maxIntroductiontLength),
-          is_admin: 0,
-          is_tutor: 1,
-          created_at: new Date(),
-          updated_at: new Date()
         }]
 
       const generateUsers = 60

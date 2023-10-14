@@ -43,7 +43,7 @@ function getRandomTime (teachingTime, bookedCourses, isPast, tutorId) {
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     try {
-      const users = await queryInterface.sequelize.query('SELECT id from Users WHERE name NOT IN ("root");')
+      const users = await queryInterface.sequelize.query('SELECT id from Users;')
       const tutors = await queryInterface.sequelize.query('SELECT id, duration, teaching_time from Tutors;')
       const courses = []
       const maxCommentLength = 100

@@ -1,5 +1,5 @@
 const { User, Tutor, Course } = require('../models')
-const { localFileHandler } = require('../helpers/file-helpers')
+const { imgurFileHandler } = require('../helpers/file-helpers')
 const dayjs = require('dayjs')
 
 const tutorController = {
@@ -122,7 +122,7 @@ const tutorController = {
 
       const [user, filePath] = await Promise.all([
         User.findByPk(req.params.id, { attributes: { exclude: ['password'] } }),
-        localFileHandler(file)
+        imgurFileHandler(file)
       ])
 
       if (!user) throw new Error('無該名使用者')
