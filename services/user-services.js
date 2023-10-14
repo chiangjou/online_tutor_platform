@@ -339,17 +339,19 @@ const userController = {
     const targetUserId = Number(req.params.id)
 
     if (userId !== targetUserId) {
-      return cb({
+      const errorResponse = {
         error: '無法查看其他使用者頁面',
         redirect: '/'
-      })
+      }
+      return cb(errorResponse)
     }
 
     if (req.user.isAdmin) {
-      return cb({
+      const errorResponse = {
         error: '管理員無個人頁面',
         redirect: '/'
-      })
+      }
+      return cb(errorResponse)
     }
 
     try {
